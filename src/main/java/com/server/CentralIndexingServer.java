@@ -7,7 +7,10 @@ import com.sun.istack.internal.NotNull;
 import java.net.MalformedURLException;
 import java.rmi.AlreadyBoundException;
 import java.rmi.Naming;
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.rmi.server.RMIClientSocketFactory;
 import java.rmi.server.RMIServerSocketFactory;
 import java.rmi.server.UnicastRemoteObject;
@@ -17,18 +20,21 @@ public class CentralIndexingServer extends UnicastRemoteObject implements Centra
 
     private Map<String, List<String>> fileNamePeerIdsMap;
     private Map<String, Peer> peerIdObjectMap;
-    private Integer peerConnections;
+    private static Integer peerConnections;
 
-    public CentralIndexingServer(String centralIndexingServer) throws RemoteException {
+    public CentralIndexingServer(Integer port, String centralIndexingServer) throws RemoteException {
+        super();
+
         fileNamePeerIdsMap = new HashMap<>();
         peerIdObjectMap = new HashMap<>();
         peerConnections = 0;
 
         try {
+            LocateRegistry.createRegistry(port);
             Naming.bind(centralIndexingServer, this);
-        } catch (AlreadyBoundException e) {
-            e.printStackTrace();
-        } catch (MalformedURLException e) {
+            Naming.lookup(centralIndexingServer);
+            System.out.println("Success: Successfully Created the Registry");
+        } catch (MalformedURLException | AlreadyBoundException | NotBoundException e) {
             e.printStackTrace();
         }
     }
