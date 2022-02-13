@@ -3,19 +3,19 @@ package com.models;
 import java.util.List;
 
 public class Peer {
-    private Integer id;
+    private String id;
     private List<String> files;
 
-    public Peer(Integer id, List<String> files) {
+    public Peer(String id, List<String> files) {
         this.id = id;
         this.files = files;
     }
 
-    public Integer getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(String id) {
         this.id = id;
     }
 

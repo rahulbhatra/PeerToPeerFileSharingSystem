@@ -4,6 +4,9 @@ import com.interfaces.CentralIndexingServerInterface;
 import com.models.Peer;
 import com.sun.istack.internal.NotNull;
 
+import java.net.MalformedURLException;
+import java.rmi.AlreadyBoundException;
+import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.rmi.server.RMIClientSocketFactory;
 import java.rmi.server.RMIServerSocketFactory;
@@ -12,10 +15,22 @@ import java.util.*;
 
 public class CentralIndexingServer extends UnicastRemoteObject implements CentralIndexingServerInterface {
 
-    private Map<String, List<Integer>> fileNamePeerIdsMap = new HashMap<>();
-    private Map<Integer, Peer> peerIdObjectMap = new HashMap<>();
+    private Map<String, List<String>> fileNamePeerIdsMap;
+    private Map<String, Peer> peerIdObjectMap;
+    private Integer peerConnections;
 
-    protected CentralIndexingServer() throws RemoteException {
+    public CentralIndexingServer(String centralIndexingServer) throws RemoteException {
+        fileNamePeerIdsMap = new HashMap<>();
+        peerIdObjectMap = new HashMap<>();
+        peerConnections = 0;
+
+        try {
+            Naming.bind(centralIndexingServer, this);
+        } catch (AlreadyBoundException e) {
+            e.printStackTrace();
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
     }
 
     protected CentralIndexingServer(int port) throws RemoteException {
@@ -27,7 +42,7 @@ public class CentralIndexingServer extends UnicastRemoteObject implements Centra
     }
 
     @Override
-    public String registry(@NotNull Integer id, List<String> fileNames) throws RemoteException {
+    public Peer registry(String id, String lookUpName, List<String> fileNames) throws RemoteException {
         System.out.println("registry method invoked");
         if(!peerIdObjectMap.containsKey(id)) {
             peerIdObjectMap.put(id, new Peer(id, fileNames));
@@ -40,11 +55,11 @@ public class CentralIndexingServer extends UnicastRemoteObject implements Centra
                 fileNamePeerIdsMap.get(fileName).add(id);
             }
         }
-        return "Success";
+        return peerIdObjectMap.get(id);
     }
 
     @Override
-    public List<Integer> search(String fileName) throws RemoteException {
+    public List<String> search(String fileName) throws RemoteException {
         return fileNamePeerIdsMap.get(fileName);
     }
 
@@ -55,7 +70,7 @@ public class CentralIndexingServer extends UnicastRemoteObject implements Centra
             Peer peer = peerIdObjectMap.get(id);
             for(String fileName: fileNames) {
                 peer.getFiles().remove(fileName);
-                List<Integer> peerIds = fileNamePeerIdsMap.get(fileName);
+                List<String> peerIds = fileNamePeerIdsMap.get(fileName);
                 peerIds.remove(peerIds.indexOf(id));
             }
 
