@@ -50,8 +50,12 @@ public class CentralIndexingServer extends UnicastRemoteObject implements Centra
     @Override
     public Peer registry(String id, String lookUpName, List<String> fileNames) throws RemoteException {
         System.out.println("registry method invoked");
-        if(!peerIdObjectMap.containsKey(id)) {
-            peerIdObjectMap.put(id, new Peer(id, fileNames));
+
+        if(id == null || id.trim() == "") {
+            Random random = new Random();
+            id = lookUpName + "-" + random.nextInt(10000);
+            Peer peer = new Peer(id, fileNames);
+            peerIdObjectMap.put(id, peer);
         }
 
         for(String fileName: fileNames) {

@@ -27,7 +27,7 @@ public class PeerServer extends UnicastRemoteObject implements PeerServerInterfa
         this.directory = directory;
 
         try {
-            Naming.bind(peerServer, this);
+            Naming.bind(peerId, this);
         } catch (AlreadyBoundException e) {
             e.printStackTrace();
         } catch (MalformedURLException e) {
@@ -50,7 +50,7 @@ public class PeerServer extends UnicastRemoteObject implements PeerServerInterfa
     public PeerFile retrieve(String peerId, String fileName) throws RemoteException {
         System.out.println("Peer" +  peerId + "is asking to get the file info of " + fileName);
         try {
-            PeerFile peerFile = new PeerFile(Files.readAllBytes(Paths.get(fileName)), fileName);
+            PeerFile peerFile = new PeerFile(Files.readAllBytes(Paths.get(this.directory + "/" + fileName)), fileName);
             return peerFile;
         } catch (FileNotFoundException e) {
             e.printStackTrace();
