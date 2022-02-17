@@ -8,23 +8,22 @@ import java.util.concurrent.Callable;
 
 import static java.nio.file.StandardWatchEventKinds.*;
 
-public class DirectoryLogs {
+public class DirectoryWatcher {
     private WatchService watchService;
     private Path path;
-    private boolean keepWatching;
-
-    @SuppressWarnings("unchecked")
+    private Boolean keepWatching;
     private static <T> WatchEvent<T> cast(WatchEvent<?> event) {
         return (WatchEvent<T>) event;
     }
 
-    public DirectoryLogs(Path directory) {
+    public DirectoryWatcher(Path directory) {
         try {
             path = directory;
             watchService = FileSystems.getDefault().newWatchService();
-            path.register(watchService, new WatchEvent.Kind[]{ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY}, SensitivityWatchEventModifier.HIGH);
+            path.register(watchService, new WatchEvent.Kind[]
+                    {ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY}, SensitivityWatchEventModifier.HIGH);
         } catch (IOException ioe) {
-            System.err.println(DirectoryLogs.class.getName() + ": IOException while creating Watch Service: " + ioe);
+            System.err.println(DirectoryWatcher.class.getName() + ": IOException while creating Watch Service: " + ioe);
             ioe.printStackTrace();
         }
     }
@@ -53,9 +52,11 @@ public class DirectoryLogs {
                 }
                 watchKey.reset();
             } catch (InterruptedException interruptedException) {
-                System.err.println(DirectoryLogs.class.getName() + ": InterruptedException while starting the Watch Service: " + interruptedException);
+                System.err.println(DirectoryWatcher.class.getName() + ": InterruptedException while starting the Watch Service: " + interruptedException);
                 interruptedException.printStackTrace();
                 return;
+            } catch (ClosedWatchServiceException cwse) {
+                System.out.println("Closed Watch Service Exception");
             }
         }
     }
@@ -65,7 +66,7 @@ public class DirectoryLogs {
             keepWatching = false;
             watchService.close();
         } catch (IOException ioe) {
-            System.err.println(DirectoryLogs.class.getName() + ": IOException while ending Watch Service: " + ioe.toString());
+            System.err.println(DirectoryWatcher.class.getName() + ": IOException while ending Watch Service: " + ioe.toString());
             ioe.printStackTrace();
         }
     }
