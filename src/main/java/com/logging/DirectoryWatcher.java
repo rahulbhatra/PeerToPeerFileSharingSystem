@@ -29,25 +29,22 @@ public class DirectoryWatcher {
     }
 
     public void beginLogging(Callable<Void> callable) {
-        keepWatching = true;
-        while (keepWatching) {
+        this.keepWatching = true;
+        while (this.keepWatching) {
             WatchKey watchKey;
             try {
                 watchKey = watchService.take();
                 for (WatchEvent<?> e : watchKey.pollEvents()) {
                     WatchEvent<Path> ev = cast(e);
-                    Path filename = ev.context();
-                    try {
-                        callable.call();
-                        if (e.kind() == ENTRY_CREATE) {
-                            System.out.println(ENTRY_CREATE + "-" + filename.getFileName());
-                        } else if (e.kind() == ENTRY_DELETE) {
-                            System.out.println(ENTRY_DELETE + "-" + filename.getFileName());
-                        } else if (e.kind() == ENTRY_MODIFY) {
-                            System.out.println(ENTRY_MODIFY + "-" + filename.getFileName());
-                        }
-                    } catch (Exception exception) {
-                        System.out.printf("Exception while calling the callback " + exception);
+                    Path filePath = ev.context();
+                    callable.call();
+
+                    if (ENTRY_CREATE == e.kind()) {
+                        System.out.println(ENTRY_CREATE + "-" + filePath.getFileName());
+                    } else if (ENTRY_DELETE == e.kind()) {
+                        System.out.println(ENTRY_DELETE + "-" + filePath.getFileName());
+                    } else if (ENTRY_MODIFY == e.kind()) {
+                        System.out.println(ENTRY_MODIFY + "-" + filePath.getFileName());
                     }
                 }
                 watchKey.reset();
@@ -55,19 +52,21 @@ public class DirectoryWatcher {
                 System.err.println(DirectoryWatcher.class.getName() + ": InterruptedException while starting the Watch Service: " + interruptedException);
                 interruptedException.printStackTrace();
                 return;
-            } catch (ClosedWatchServiceException cwse) {
+            } catch (ClosedWatchServiceException closedWatchServiceException) {
                 System.out.println("Closed Watch Service Exception");
+            } catch (Exception exception) {
+                exception.printStackTrace();
             }
         }
     }
 
     public void endLogging() {
         try {
-            keepWatching = false;
-            watchService.close();
-        } catch (IOException ioe) {
-            System.err.println(DirectoryWatcher.class.getName() + ": IOException while ending Watch Service: " + ioe.toString());
-            ioe.printStackTrace();
+            this.keepWatching = false;
+            this.watchService.close();
+        } catch (IOException ioException) {
+            System.err.println(DirectoryWatcher.class.getName() + ": IOException while ending Watch Service: " + ioException);
+            ioException.printStackTrace();
         }
     }
 }

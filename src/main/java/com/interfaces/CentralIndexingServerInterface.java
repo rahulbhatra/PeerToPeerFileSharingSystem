@@ -7,7 +7,7 @@ import java.rmi.RemoteException;
 import java.util.List;
 
 public interface CentralIndexingServerInterface extends Remote {
-    public Peer registry(String id, String lookUpName, List<String> fileNames) throws RemoteException;
-    public List<String> search(String fileName) throws RemoteException;
-    public String deRegistry(String id, List<String> fileNames) throws RemoteException;
+    Peer registry(String id, String lookUpName, List<String> fileNames) throws RemoteException;
+    List<String> search(String fileName) throws RemoteException;
+    String deRegistry(String id, List<String> fileNames) throws RemoteException;
 }

@@ -10,5 +10,7 @@ public class ConstantsUtil {
     public final static String READING_SHARED_DIRECTORY = "Reading the shared directory: ";
     public final static String WRONG_DIRECTORY = "ERROR: Directory entered is invalid. | DirectoryName: ";
     public final static String DE_REGISTERING_ERROR = "During De Registering got Exception";
-    public final static String FILE_NAME_IN_PARALLEL_SEARCH = "peer0_large_file0";
+    public final static String FILE_NAME_IN_PARALLEL_SEARCH = "peer0_small_file1";
+    public final static String STARTING_RESULTS = "******************** Starting to Get Results ************************";
+    public final static String Ending_RESULTS = "*********************** Ending to Get Results ************************";
 }

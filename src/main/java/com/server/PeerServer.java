@@ -47,14 +47,15 @@ public class PeerServer extends UnicastRemoteObject implements PeerServerInterfa
     }
 
     @Override
-    public PeerFile retrieve(String peerId, String fileName) throws RemoteException {
-        System.out.println("Peer" +  peerId + "is asking to get the file info of " + fileName);
+    public synchronized PeerFile retrieve(String peerId, String fileName) throws RemoteException {
+        System.out.println("Peer" +  peerId + " is asking to get the file info of " + fileName);
         try {
-            PeerFile peerFile = new PeerFile(Files.readAllBytes(Paths.get(this.directory + "/" + fileName)), fileName);
-            return peerFile;
+            return new PeerFile(Files.readAllBytes(Paths.get(this.directory + "/" + fileName)), fileName);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return null;

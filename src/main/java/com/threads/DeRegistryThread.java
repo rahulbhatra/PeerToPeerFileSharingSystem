@@ -22,7 +22,9 @@ public class DeRegistryThread extends Thread {
     public void run() {
         System.out.println("De registering peer from the central indexing server.");
         try {
-            centralIndexingServerInterface.deRegistry(peerId, sharedFiles);
+            synchronized (centralIndexingServerInterface) {
+                centralIndexingServerInterface.deRegistry(peerId, sharedFiles);
+            }
         } catch (Exception exception) {
             System.err.println(ConstantsUtil.DE_REGISTERING_ERROR);
             exception.printStackTrace();
