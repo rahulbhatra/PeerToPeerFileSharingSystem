@@ -4,11 +4,14 @@ import com.test.CentralIndexingServerTest;
 import com.test.PeerServerTest;
 import com.test.PeerTest;
 import com.utility.ConstantsUtil;
+import com.utility.FileUtil;
 
 import java.util.Scanner;
 
 public class main {
     public static void main(String[] args) {
+
+        FileUtil.createFile(1, "abcd", ConstantsUtil.shared, 5);
 
         System.out.println("Enter what kind of test do you want to run?");
         System.out.println("1. Central Indexing Server methods verification.");
@@ -41,6 +44,5 @@ public class main {
                     System.out.println("Selected Wrong Input !");
             }
         }
-
     }
 }

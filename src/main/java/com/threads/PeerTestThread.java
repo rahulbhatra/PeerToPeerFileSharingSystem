@@ -5,15 +5,11 @@ import com.interfaces.CentralIndexingServerInterface;
 import com.interfaces.PeerServerInterface;
 import com.logging.DirectoryWatcher;
 import com.models.Peer;
-import com.models.PeerFile;
 import com.models.TestResults;
-import com.utility.ConstantsUtil;
 import com.utility.FileUtil;
 
 import java.util.*;
 import java.rmi.Naming;
-import java.io.File;
-import java.io.FileOutputStream;
 
 public class PeerTestThread extends Thread {
 

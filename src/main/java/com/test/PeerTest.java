@@ -25,7 +25,7 @@ import java.util.*;
 public class PeerTest extends Thread {
 
     public static void parallelPeerTesting() {
-        String sharedDirectory = "./shared";
+        String sharedDirectory = ConstantsUtil.shared;
         int numberOfPeers = 3;
         int totalFileCounts = 0;
         System.out.println("Initializing " + numberOfPeers + " number of peers for multithreaded environment.");
