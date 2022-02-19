@@ -7,7 +7,6 @@ import com.server.PeerServer;
 import com.utility.FileUtil;
 import com.utility.ConstantsUtil;
 import org.apache.commons.collections4.CollectionUtils;
-import org.junit.Test;
 
 import java.net.MalformedURLException;
 import java.rmi.Naming;
@@ -20,8 +19,8 @@ public class PeerServerTest {
 
 
     public static void peerServerTest() {
-        String serverDirectory = ConstantsUtil.peer1Directory;
-        String clientDirectory = ConstantsUtil.peer2Directory;
+        String serverDirectory = ConstantsUtil.PEER1_DIRECTORY;
+        String clientDirectory = ConstantsUtil.PEER2_DIRECTORY;
         try {
             CentralIndexingServer centralIndexingServer = new CentralIndexingServer(Integer.parseInt(ConstantsUtil.PORT),
                     ConstantsUtil.CENTRAL_INDEXING_SERVER);

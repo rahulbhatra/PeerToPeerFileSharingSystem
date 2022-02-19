@@ -33,7 +33,7 @@ public class DirectoryLogsThread extends Thread {
                 try {
                     // If any change is detected, the peer needs to read the directory again
                     System.out.println("Change detected in the shared directory. | Shared Directory : " + directory);
-                    sharedFiles = FileUtil.readSharedDirectory(true, directory);
+                    sharedFiles = FileUtil.readSharedDirectory(false, directory);
                     centralIndexingServerInterface.registry(peerId, ConstantsUtil.PEER_SERVER, sharedFiles);
                 } catch (Exception ex) {
                     System.err.println("EXCEPTION: Client Exception while RE-REGISTERING files: " + ex.toString());

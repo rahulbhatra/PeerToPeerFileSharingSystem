@@ -12,9 +12,9 @@ public class ConstantsUtil {
     public final static String DE_REGISTERING_ERROR = "During De Registering got Exception";
     public final static String FILE_NAME_IN_PARALLEL_SEARCH = "peer0_small_file1";
     public final static String shared = "./shared";
-    public final static String peer1Directory = "./shared/0";
-    public final static String peer2Directory = "./shared/1";
-    public final static String peer3Directory = "./shared/2";
+    public final static String PEER1_DIRECTORY = "./shared/0";
+    public final static String PEER2_DIRECTORY = "./shared/1";
+    public final static String PEER3_DIRECTORY = "./shared/2";
     public final static String STARTING_RESULTS = "******************** Starting to Get Results ************************";
     public final static String Ending_RESULTS = "*********************** Ending to Get Results ************************";
 }

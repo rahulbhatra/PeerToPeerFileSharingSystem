@@ -71,14 +71,19 @@ public class FileUtil {
                 centralIndexingServerInterface);
         directoryLogsThread.start();
     }
-    public static void createFile( int peerId, String filename, String directory, int size_in_kb  ){
+
+    public static void createFile(String filename, String directoryName, int size_in_kb  ){
         try {
-            File newFile = new File(directory+"\\"+peerId+"\\"+filename);
+            File directory = new File(directoryName);
+            if (!directory.exists()) {
+                directory.mkdir();
+            }
+            File newFile = new File(directoryName+ "/" +filename);
             if (newFile.createNewFile()) {
                 System.out.println("File created: " + newFile.getName());
                 FileWriter myWriter = new FileWriter(newFile);
-                for(int i = 0 ; i < size_in_kb*10; i++){
-                    myWriter.write("Files in Java might be tricky, but it is fun enough!");
+                for(int i = 0 ; i < size_in_kb * 1024 / filename.length(); i++){
+                    myWriter.write(filename);
                 }
                 myWriter.close();
             } else {
@@ -87,6 +92,14 @@ public class FileUtil {
         } catch (IOException e) {
             System.out.println("An error occurred.");
             e.printStackTrace();
+        }
+    }
+
+    public static void createFiles() {
+        for(int i = 0; i < 3; i++) {
+            for(int j = 0; j < 10; j++) {
+                createFile("P" + i + "-" + (j + 1) + "KB", ConstantsUtil.shared + "/" + i, j + 1);
+            }
         }
     }
 }

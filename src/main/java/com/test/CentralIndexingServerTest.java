@@ -17,9 +17,9 @@ public class CentralIndexingServerTest {
     @Test
     public static void clientIndexingServer() {
         try{
-            String peer1Directory = ConstantsUtil.peer1Directory;
-            String peer2Directory = ConstantsUtil.peer2Directory;
-            String peer3Directory = ConstantsUtil.peer3Directory;
+            String peer1Directory = ConstantsUtil.PEER1_DIRECTORY;
+            String peer2Directory = ConstantsUtil.PEER2_DIRECTORY;
+            String peer3Directory = ConstantsUtil.PEER3_DIRECTORY;
 
             CentralIndexingServerInterface centralIndexingServerInterface = new CentralIndexingServer(Integer.
                     parseInt(ConstantsUtil.PORT), ConstantsUtil.CENTRAL_INDEXING_SERVER);
@@ -36,7 +36,7 @@ public class CentralIndexingServerTest {
             Peer peer3 = centralIndexingServerInterface.registry("", ConstantsUtil.PEER_SERVER, peer3Files);
             PeerServerInterface peer3ServerInterface = new PeerServer(peer3.getId(), ConstantsUtil.PEER_SERVER, peer3Directory);
 
-            List<String> peerIds = centralIndexingServerInterface.search("peer0_small_file1");
+            List<String> peerIds = centralIndexingServerInterface.search("P0-1KB");
             centralIndexingServerInterface.deRegistry(peer1.getId(), peer1Files);
             centralIndexingServerInterface.deRegistry(peer2.getId(), peer2Files);
             centralIndexingServerInterface.deRegistry(peer3.getId(), peer3Files);

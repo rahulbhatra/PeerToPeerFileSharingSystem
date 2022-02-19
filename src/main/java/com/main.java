@@ -5,13 +5,22 @@ import com.test.PeerServerTest;
 import com.test.PeerTest;
 import com.utility.ConstantsUtil;
 import com.utility.FileUtil;
+import org.apache.commons.io.FileUtils;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Scanner;
 
 public class main {
     public static void main(String[] args) {
 
-        FileUtil.createFile(1, "abcd", ConstantsUtil.shared, 5);
+        try {
+            FileUtils.cleanDirectory(new File(ConstantsUtil.shared));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        FileUtil.createFiles();
 
         System.out.println("Enter what kind of test do you want to run?");
         System.out.println("1. Central Indexing Server methods verification.");
