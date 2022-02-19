@@ -16,10 +16,10 @@ import java.rmi.RemoteException;
 import java.util.List;
 import java.util.Scanner;
 
-public class ClientServerTest {
+public class PeerServerTest {
 
     @Test
-    public static void clientServerTest() {
+    public static void peerServerTest() {
         String serverDirectory = "./shared/0";
         String clientDirectory = "./shared/1";
         try {
@@ -64,6 +64,7 @@ public class ClientServerTest {
                     PeerServerInterface chosenPeerServerInterface = (PeerServerInterface)
                             Naming.lookup(peerServerIdInput);
                     FileUtil.retrieveFile(clientPeer, serverPeer, fileName, clientDirectory, chosenPeerServerInterface);
+                    break;
                 }
             }
         } catch (RemoteException e) {

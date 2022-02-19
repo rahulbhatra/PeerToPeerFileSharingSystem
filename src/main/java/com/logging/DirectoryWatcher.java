@@ -9,18 +9,18 @@ import java.util.concurrent.Callable;
 import static java.nio.file.StandardWatchEventKinds.*;
 
 public class DirectoryWatcher {
-    private WatchService watchService;
     private Path path;
     private Boolean keepWatching;
+    private WatchService watchService;
     private static <T> WatchEvent<T> cast(WatchEvent<?> event) {
         return (WatchEvent<T>) event;
     }
 
-    public DirectoryWatcher(Path directory) {
+    public DirectoryWatcher(String directory) {
         try {
-            path = directory;
-            watchService = FileSystems.getDefault().newWatchService();
-            path.register(watchService, new WatchEvent.Kind[]
+            this.path = Paths.get(directory);
+            this.watchService = FileSystems.getDefault().newWatchService();
+            this.path.register(watchService, new WatchEvent.Kind[]
                     {ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY}, SensitivityWatchEventModifier.HIGH);
         } catch (IOException ioe) {
             System.err.println(DirectoryWatcher.class.getName() + ": IOException while creating Watch Service: " + ioe);
@@ -34,16 +34,16 @@ public class DirectoryWatcher {
             WatchKey watchKey;
             try {
                 watchKey = watchService.take();
-                for (WatchEvent<?> e : watchKey.pollEvents()) {
-                    WatchEvent<Path> ev = cast(e);
-                    Path filePath = ev.context();
+                for (WatchEvent<?> event : watchKey.pollEvents()) {
+                    WatchEvent<Path> watchEvent = cast(event);
+                    Path filePath = watchEvent.context();
                     callable.call();
 
-                    if (ENTRY_CREATE == e.kind()) {
+                    if (ENTRY_CREATE == event.kind()) {
                         System.out.println(ENTRY_CREATE + "-" + filePath.getFileName());
-                    } else if (ENTRY_DELETE == e.kind()) {
+                    } else if (ENTRY_DELETE == event.kind()) {
                         System.out.println(ENTRY_DELETE + "-" + filePath.getFileName());
-                    } else if (ENTRY_MODIFY == e.kind()) {
+                    } else if (ENTRY_MODIFY == event.kind()) {
                         System.out.println(ENTRY_MODIFY + "-" + filePath.getFileName());
                     }
                 }
@@ -53,7 +53,7 @@ public class DirectoryWatcher {
                 interruptedException.printStackTrace();
                 return;
             } catch (ClosedWatchServiceException closedWatchServiceException) {
-                System.out.println("Closed Watch Service Exception");
+                System.out.println("Closed Watch Service Exception | completely fine to have this");
             } catch (Exception exception) {
                 exception.printStackTrace();
             }

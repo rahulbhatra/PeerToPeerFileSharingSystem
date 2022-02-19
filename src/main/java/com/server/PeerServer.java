@@ -3,10 +3,7 @@ package com.server;
 import com.interfaces.PeerServerInterface;
 import com.models.PeerFile;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.*;
 import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -47,10 +44,21 @@ public class PeerServer extends UnicastRemoteObject implements PeerServerInterfa
     }
 
     @Override
-    public synchronized PeerFile retrieve(String peerId, String fileName) throws RemoteException {
-        System.out.println("Peer" +  peerId + " is asking to get the file info of " + fileName);
+    public synchronized void retrieve(String clientPeerId, String clientPeerDirectory, String fileName) throws RemoteException {
+        System.out.println("Peer" +  clientPeerId + " is asking to get the file info of " + fileName);
         try {
-            return new PeerFile(Files.readAllBytes(Paths.get(this.directory + "/" + fileName)), fileName);
+            PeerFile peerFile =  new PeerFile(Files.readAllBytes(Paths.get(this.directory + "/" + fileName)), fileName);
+            File file = new File(clientPeerDirectory, peerFile.getFileName());
+            file.createNewFile();
+            FileOutputStream out = new FileOutputStream(file, true);
+
+            if (peerFile.getData().length > 0) {
+                out.write(peerFile.getData(), 0, peerFile.getData().length);
+            } else {
+                out.write(peerFile.getData(), 0, 0);
+            }
+            out.flush();
+            out.close();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -58,6 +66,5 @@ public class PeerServer extends UnicastRemoteObject implements PeerServerInterfa
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return null;
     }
 }

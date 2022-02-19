@@ -1,8 +1,11 @@
 package com.utility;
 
+import com.interfaces.CentralIndexingServerInterface;
 import com.interfaces.PeerServerInterface;
+import com.logging.DirectoryWatcher;
 import com.models.Peer;
 import com.models.PeerFile;
+import com.threads.DirectoryLogsThread;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -23,22 +26,8 @@ public class FileUtil {
             public void run() {
                 try {
                     System.out.println("File retrieval started from peerId: " + serverPeer.getId() + " | Time:" + System.currentTimeMillis());
-                    PeerFile peerFile = peerServerInterface.retrieve(serverPeer.getId(), filename);
+                    peerServerInterface.retrieve(serverPeer.getId(), clientDirectory, filename);
                     System.out.println("File retrieval done from peerId: " + serverPeer.getId() + " | Time:" + System.currentTimeMillis());
-
-                    File file = new File(clientDirectory, peerFile.getFileName());
-                    file.createNewFile();
-
-                    FileOutputStream out = new FileOutputStream(file, true);
-                    System.out.println("File download started to peerId: " + clientPeer.getId() + " | Time:" + System.currentTimeMillis());
-                    if (peerFile.getData().length > 0) {
-                        out.write(peerFile.getData(), 0, peerFile.getData().length);
-                    } else {
-                        out.write(peerFile.getData(), 0, 0);
-                    }
-                    System.out.println("File download done to peerId: " + clientPeer.getId() + " | Time:" + System.currentTimeMillis());
-                    out.flush();
-                    out.close();
                 } catch (Exception exception) {
                     exception.printStackTrace();
                 }
@@ -61,7 +50,7 @@ public class FileUtil {
 
         List<String> filenames = new ArrayList<>();
         for (File file : folder.listFiles()) {
-            if (!file.isDirectory() && file.length() <= 1024 * 1024) {
+            if (!file.isDirectory() && file.length() <= 10 * 1024 * 1024) {
                 if(showFileNames) {
                     System.out.println("Sharing : " + file.getName());
                 }
@@ -69,5 +58,15 @@ public class FileUtil {
             }
         }
         return filenames;
+    }
+
+    public static void startDirectoryLogging(Peer peer, String directory, List<String> sharedFiles,
+                                      DirectoryWatcher directoryWatcher,
+                                      CentralIndexingServerInterface centralIndexingServerInterface) {
+        directoryWatcher = new DirectoryWatcher(directory);
+        DirectoryLogsThread directoryLogsThread = new DirectoryLogsThread(directoryWatcher, directory, peer.getId(),
+                sharedFiles,
+                centralIndexingServerInterface);
+        directoryLogsThread.start();
     }
 }
