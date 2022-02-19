@@ -16,7 +16,7 @@ public class PeerTest extends Thread {
     private static Map<Integer, TestResults> testResults;
 
     public static void parallelPeerTesting() {
-        String sharedDirectory = "./shared";
+        String sharedDirectory = ConstantsUtil.shared;
         int numberOfPeers = 3;
         System.out.println("Initializing " + numberOfPeers + " number of peers.");
         PeerTestThread[] peerTestThreads = new PeerTestThread[numberOfPeers];

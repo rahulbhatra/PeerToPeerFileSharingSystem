@@ -6,6 +6,8 @@ import com.models.PeerFile;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -69,5 +71,24 @@ public class FileUtil {
             }
         }
         return filenames;
+    }
+
+    public static void createFile( int peerId, String filename, String directory, int size_in_kb  ){
+        try {
+            File newFile = new File(directory+"\\"+peerId+"\\"+filename);
+            if (newFile.createNewFile()) {
+                System.out.println("File created: " + newFile.getName());
+                FileWriter myWriter = new FileWriter(newFile);
+                for(int i = 0 ; i < size_in_kb*10; i++){
+                    myWriter.write("Files in Java might be tricky, but it is fun enough!");
+                }
+                myWriter.close();
+            } else {
+                System.out.println("File already exists.");
+            }
+        } catch (IOException e) {
+            System.out.println("An error occurred.");
+            e.printStackTrace();
+        }
     }
 }

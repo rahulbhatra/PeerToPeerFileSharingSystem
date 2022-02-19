@@ -18,9 +18,9 @@ public class CentralIndexingServerTest {
     public void clientIndexingServer() {
         boolean exception = false;
         try{
-            String peer1Directory = "./shared/0";
-            String peer2Directory = "./shared/1";
-            String peer3Directory = "./shared/2";
+            String peer1Directory = ConstantsUtil.peer1Directory;
+            String peer2Directory = ConstantsUtil.peer2Directory;
+            String peer3Directory = ConstantsUtil.peer3Directory;
 
             CentralIndexingServerInterface centralIndexingServerInterface = new CentralIndexingServer(Integer.
                     parseInt(ConstantsUtil.PORT), ConstantsUtil.CENTRAL_INDEXING_SERVER);

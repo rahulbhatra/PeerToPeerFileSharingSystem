@@ -20,8 +20,8 @@ public class ClientServerTest {
 
     @Test
     public static void clientServerTest() {
-        String serverDirectory = "./shared/0";
-        String clientDirectory = "./shared/1";
+        String serverDirectory = ConstantsUtil.peer1Directory;
+        String clientDirectory = ConstantsUtil.peer2Directory;
         try {
             CentralIndexingServer centralIndexingServer = new CentralIndexingServer(Integer.parseInt(ConstantsUtil.PORT),
                     ConstantsUtil.CENTRAL_INDEXING_SERVER);
