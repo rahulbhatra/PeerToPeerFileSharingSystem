@@ -1,6 +1,7 @@
 package com.server;
 
 import com.interfaces.CentralIndexingServerInterface;
+import com.interfaces.PeerServerInterface;
 import com.models.Peer;
 
 import java.net.MalformedURLException;
@@ -67,8 +68,21 @@ public class CentralIndexingServer extends UnicastRemoteObject implements Centra
     }
 
     @Override
-    public synchronized List<String> search(String fileName) throws RemoteException {
-        return fileNamePeerIdsMap.get(fileName);
+    public synchronized List<PeerServerInterface> search(String fileName) throws RemoteException {
+        List<String> peerIds = fileNamePeerIdsMap.get(fileName);
+        List<PeerServerInterface> peerServerInterfaces = new ArrayList<>();
+        for(String peerId: peerIds) {
+            PeerServerInterface peerServerInterface = null;
+            try {
+                 peerServerInterface = (PeerServerInterface) Naming.lookup(peerId);
+            } catch (NotBoundException e) {
+                e.printStackTrace();
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            }
+            peerServerInterfaces.add(peerServerInterface);
+        }
+        return peerServerInterfaces;
     }
 
     @Override

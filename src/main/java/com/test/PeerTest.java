@@ -14,6 +14,7 @@ import com.threads.DirectoryLogsThread;
 import com.threads.PeerTestThread;
 import com.utility.ConstantsUtil;
 import com.utility.FileUtil;
+import com.utility.TestResultsUtil;
 import org.junit.Test;
 
 import java.io.File;
@@ -27,7 +28,6 @@ public class PeerTest extends Thread {
     public static void parallelPeerTesting() {
         String sharedDirectory = ConstantsUtil.shared;
         int numberOfPeers = 3;
-        int totalFileCounts = 0;
         System.out.println("Initializing " + numberOfPeers + " number of peers for multithreaded environment.");
         PeerTestThread[] peerTestThreads = new PeerTestThread[numberOfPeers];
         Peer[] peers = new Peer[numberOfPeers];
@@ -46,7 +46,6 @@ public class PeerTest extends Thread {
             for (int i = 0; i < numberOfPeers; i++) {
                 String directory = sharedDirectory + "/" + i;
                 List<String> sharedFiles = FileUtil.readSharedDirectory(true, directory);
-                totalFileCounts += sharedFiles.size();
                 Peer peer = centralIndexingServerInterface.registry("", ConstantsUtil.PEER_SERVER, sharedFiles);
                 peers[i] = peer;
                 firstPeer = firstPeer == null ? peer : firstPeer;
@@ -64,7 +63,7 @@ public class PeerTest extends Thread {
             for (int i = 0; i < numberOfPeers; i++) {
                 peerTestThreads[i].join();
             }
-            fetchResults(numberOfPeers, totalFileCounts, peers, testResults);
+            fetchResults(numberOfPeers, peers[0].getFiles().size(), peers, testResults);
         } catch (RemoteException e) {
             e.printStackTrace();
         } catch (InterruptedException interruptedException) {
@@ -104,19 +103,8 @@ public class PeerTest extends Thread {
 
                 try {
                     PeerServerInterface peerServerInterface = (PeerServerInterface) Naming.lookup(firstPeer.getId());
-
-                    long retrieveStartTime = System.currentTimeMillis();
-                    testResults.get(peer.getPeerNumber()).setRetrieveStartTime(retrieveStartTime);
-                    System.out.println("Peer " + peer.getPeerNumber() + ": Retrieve start time = " + retrieveStartTime);
-                    for(int j = 0; j < 500; j ++) {
-                        for (String searchFile: firstPeer.getFiles()) {
-                            peerServerInterface.retrieve(peer.getId(), directory, searchFile);
-                        }
-                    }
-                    long retrieveEndTime = System.currentTimeMillis();
-                    testResults.get(peer.getPeerNumber()).setRetrieveEndTime(System.currentTimeMillis());
-                    System.out.println("Peer " + peer.getPeerNumber() + ": Retrieve end time = " + retrieveEndTime);
-
+                    TestResultsUtil.getRetrievalResults(firstPeer, peer, directory, testResults.get(peer.getPeerNumber()), peerServerInterface);
+                    TestResultsUtil.getSearchResults(firstPeer, peer, testResults.get(peer.getPeerNumber()), centralIndexingServerInterface);
                     System.out.println("Exiting Peer " + peer.getPeerNumber());
                     directoryWatcher.endLogging();
                 } catch (Exception e) {
@@ -130,18 +118,37 @@ public class PeerTest extends Thread {
 
     }
 
-    public static void fetchResults(int numberOfPeers, int totalFileCount, Peer[] peers, Map<Integer, TestResults> testResults) {
-        Double averageTime = 0.0;
+    public static void fetchResults(int numberOfPeers, int filesUsedInOperations, Peer[] peers, Map<Integer, TestResults> testResults) {
+        int numberOfRequest = 500 * filesUsedInOperations * numberOfPeers;
+        Double totalRetrievalTime = 0.0;
+
         System.out.println(ConstantsUtil.STARTING_RESULTS);
         for (int i = 0; i < numberOfPeers; i++) {
             Peer peer = peers[i];
-            averageTime = averageTime + (testResults.get(peer.getPeerNumber()).getRetrieveEndTime() - testResults.get(peer.getPeerNumber()).getRetrieveStartTime());
-            System.out.println("Peer " + i + ": start = " + testResults.get(peer.getPeerNumber()).getRetrieveStartTime() +
-                    ", end = " + testResults.get(peer.getPeerNumber()).getRetrieveEndTime());
+            TestResults tr = testResults.get(peer.getPeerNumber());
+            totalRetrievalTime = totalRetrievalTime + tr.getRetrieveEndTime() - tr.getRetrieveStartTime();
+            System.out.println("Peer " + i + ": retrieval start = " + tr.getRetrieveStartTime() +
+                    ", retrieval end = " + tr.getRetrieveEndTime());
         }
-        averageTime = averageTime / (500 * totalFileCount * numberOfPeers);
-        System.out.println("Average time for one peer = " + averageTime);
-        System.out.println("File size = 10K");
+        System.out.println("Total retrieval time for all peers = " + totalRetrievalTime + " Number of request made: " + numberOfRequest);
+        Double averageRetrievalTime = totalRetrievalTime /  numberOfRequest;
+        System.out.println("Average retrieval time for one peer = " + averageRetrievalTime);
+        System.out.println(ConstantsUtil.Ending_RESULTS);
+
+        System.out.println(ConstantsUtil.STARTING_RESULTS);
+        Double totalSearchTime = 0.0;
+        for (int i = 0; i < numberOfPeers; i++) {
+            Peer peer = peers[i];
+            TestResults tr = testResults.get(peer.getPeerNumber());
+            totalSearchTime = totalSearchTime + tr.getSearchEndTime() - tr.getSearchStartTime();
+            System.out.println("Peer " + i + ": searching start = " + tr.getSearchStartTime() +
+                    ", searching end = " + tr.getSearchEndTime());
+        }
+
+        System.out.println("Total search time for all peers = " + totalSearchTime + " Number of request made: " + numberOfRequest);
+        Double averageSearchTime = totalSearchTime / numberOfRequest;
+        System.out.println("Average search time for one peer = " + averageSearchTime);
+
         System.out.println(ConstantsUtil.Ending_RESULTS);
         System.out.println("Test is ending");
     }

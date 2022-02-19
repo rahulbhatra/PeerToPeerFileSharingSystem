@@ -1,6 +1,7 @@
 package com.test;
 
 import com.interfaces.PeerServerInterface;
+import com.logging.DirectoryWatcher;
 import com.models.Peer;
 import com.server.CentralIndexingServer;
 import com.server.PeerServer;
@@ -42,35 +43,18 @@ public class PeerServerTest {
 
                 if (fileName != null) {
                     fileName = fileName.trim();
-                    List<String> peerServerIds = centralIndexingServer.search(fileName);
-                    if (CollectionUtils.isEmpty(peerServerIds)) {
+                    List<PeerServerInterface> peerServerInterfaces = centralIndexingServer.search(fileName);
+                    if (CollectionUtils.isEmpty(peerServerInterfaces)) {
                         System.err.println(ConstantsUtil.FILE_NOT_FOUND_ERROR);
                         continue;
                     }
-
-                    System.out.println("Peer containing files:");
-                    for (String peerServerId : peerServerIds) {
-                        System.out.println("Peer id : " + peerServerId);
-                    }
-                    System.out.println("Choose one peerServer to download the file!");
-
-                    String peerServerIdInput = scanner.nextLine();
-                    if (!peerServerIds.contains(peerServerIdInput)) {
-                        System.err.println(ConstantsUtil.WRONG_PEER_SELECTION_ERROR);
-                        continue;
-                    }
-                    System.out.println("Connecting to the peerServer server " + peerServerIdInput);
-                    PeerServerInterface chosenPeerServerInterface = (PeerServerInterface)
-                            Naming.lookup(peerServerIdInput);
-                    FileUtil.retrieveFile(clientPeer, serverPeer, fileName, clientDirectory, chosenPeerServerInterface);
+                    DirectoryWatcher directoryWatcher = new DirectoryWatcher(clientDirectory);
+                    FileUtil.startDirectoryLogging(clientPeer, clientDirectory, clientFileNames, directoryWatcher, centralIndexingServer);
+                    FileUtil.retrieveFile(clientPeer, serverPeer, fileName, clientDirectory, peerServerInterfaces.get(0));
                     break;
                 }
             }
         } catch (RemoteException e) {
-            e.printStackTrace();
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        } catch (NotBoundException e) {
             e.printStackTrace();
         }
     }

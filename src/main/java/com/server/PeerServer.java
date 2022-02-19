@@ -49,9 +49,7 @@ public class PeerServer extends UnicastRemoteObject implements PeerServerInterfa
         try {
             PeerFile peerFile =  new PeerFile(Files.readAllBytes(Paths.get(this.directory + "/" + fileName)), fileName);
             File file = new File(clientPeerDirectory, peerFile.getFileName());
-            if(file.exists()) {
-                System.out.println("File Already Exists");
-            } else {
+            if(!file.exists()) {
                 System.out.println("Creating a New File | Directory: " + clientPeerDirectory + " | FileName : " + fileName);
                 file.createNewFile();
                 FileOutputStream out = new FileOutputStream(file, true);

@@ -36,7 +36,7 @@ public class CentralIndexingServerTest {
             Peer peer3 = centralIndexingServerInterface.registry("", ConstantsUtil.PEER_SERVER, peer3Files);
             PeerServerInterface peer3ServerInterface = new PeerServer(peer3.getId(), ConstantsUtil.PEER_SERVER, peer3Directory);
 
-            List<String> peerIds = centralIndexingServerInterface.search("P0-1KB");
+            centralIndexingServerInterface.search("P0-1KB");
             centralIndexingServerInterface.deRegistry(peer1.getId(), peer1Files);
             centralIndexingServerInterface.deRegistry(peer2.getId(), peer2Files);
             centralIndexingServerInterface.deRegistry(peer3.getId(), peer3Files);

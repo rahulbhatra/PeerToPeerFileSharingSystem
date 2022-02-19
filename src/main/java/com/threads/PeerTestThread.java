@@ -7,6 +7,7 @@ import com.logging.DirectoryWatcher;
 import com.models.Peer;
 import com.models.TestResults;
 import com.utility.FileUtil;
+import com.utility.TestResultsUtil;
 
 import java.util.*;
 import java.rmi.Naming;
@@ -43,18 +44,8 @@ public class PeerTestThread extends Thread {
 
         try {
             PeerServerInterface peerServerInterface = (PeerServerInterface) Naming.lookup(firstPeer.getId());
-
-            long retrieveStartTime = System.currentTimeMillis();
-            testResults.get(peer.getPeerNumber()).setRetrieveStartTime(retrieveStartTime);
-            System.out.println("Peer " + peer.getPeerNumber() + ": Retrieve start time = " + retrieveStartTime);
-            for(int i = 0; i < 500; i ++) {
-                for (String searchFile: firstPeer.getFiles()) {
-                    peerServerInterface.retrieve(peer.getId(), directory, searchFile);
-                }
-            }
-            long retrieveEndTime = System.currentTimeMillis();
-            testResults.get(peer.getPeerNumber()).setRetrieveEndTime(System.currentTimeMillis());
-            System.out.println("Peer " + peer.getPeerNumber() + ": Retrieve end time = " + retrieveEndTime);
+            TestResultsUtil.getRetrievalResults(firstPeer, peer, directory, testResults.get(peer.getPeerNumber()), peerServerInterface);
+            TestResultsUtil.getSearchResults(firstPeer, peer, testResults.get(peer.getPeerNumber()), centralIndexingServerInterface);
             System.out.println("Exiting Peer " + peer.getPeerNumber());
             directoryWatcher.endLogging();
         } catch (Exception e) {
