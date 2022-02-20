@@ -14,13 +14,26 @@ import java.util.Scanner;
 public class main {
     public static void main(String[] args) {
 
+        Scanner scanner = new Scanner(System.in);
         try {
             FileUtils.cleanDirectory(new File(ConstantsUtil.shared));
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        FileUtil.createFiles();
+        int numberOfPeers;
+        do {
+            System.out.println("Enter number of peers you want to test for between 3 to 10.");
+            numberOfPeers = scanner.nextInt();
+
+            if( numberOfPeers >= 3 && numberOfPeers <= 10) {
+                FileUtil.createFiles(numberOfPeers);
+            } else {
+                System.out.println("Entered value is incorrect!");
+            }
+        } while (numberOfPeers < 3 || numberOfPeers > 10);
+
+
 
         System.out.println("Enter what kind of test do you want to run?");
         System.out.println("1. Central Indexing Server methods verification.");
@@ -30,7 +43,6 @@ public class main {
 
         boolean isCorrectInput = false;
         while (!isCorrectInput) {
-            Scanner scanner = new Scanner(System.in);
             int option = scanner.nextInt();
             switch (option) {
                 case 1:
@@ -42,11 +54,11 @@ public class main {
                     isCorrectInput = true;
                     break;
                 case 3:
-                    PeerTest.sequentialTesting();
+                    PeerTest.sequentialTesting(numberOfPeers);
                     isCorrectInput = true;
                     break;
                 case 4:
-                    PeerTest.parallelPeerTesting();
+                    PeerTest.parallelPeerTesting(numberOfPeers);
                     isCorrectInput = true;
                     break;
                 default:

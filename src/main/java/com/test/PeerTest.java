@@ -25,9 +25,8 @@ import java.util.*;
 
 public class PeerTest extends Thread {
 
-    public static void parallelPeerTesting() {
+    public static void parallelPeerTesting(int numberOfPeers) {
         String sharedDirectory = ConstantsUtil.shared;
-        int numberOfPeers = 3;
         System.out.println("Initializing " + numberOfPeers + " number of peers for multithreaded environment.");
         PeerTestThread[] peerTestThreads = new PeerTestThread[numberOfPeers];
         Peer[] peers = new Peer[numberOfPeers];
@@ -71,9 +70,8 @@ public class PeerTest extends Thread {
         }
     }
 
-    public static void sequentialTesting() {
+    public static void sequentialTesting(int numberOfPeers) {
         String sharedDirectory = "./shared";
-        int numberOfPeers = 3;
         System.out.println("Initializing " + numberOfPeers + " number of peers for sequential environment.");
         Peer[] peers = new Peer[numberOfPeers];
         Map<Integer, TestResults> testResults = new HashMap<>();

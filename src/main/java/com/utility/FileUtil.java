@@ -95,8 +95,8 @@ public class FileUtil {
         }
     }
 
-    public static void createFiles() {
-        for(int i = 0; i < 3; i++) {
+    public static void createFiles(int numberOfPeers) {
+        for(int i = 0; i < numberOfPeers; i++) {
             for(int j = 0; j < 10; j++) {
                 createFile("P" + i + "-" + (j + 1) + "KB", ConstantsUtil.shared + "/" + i, j + 1);
             }
