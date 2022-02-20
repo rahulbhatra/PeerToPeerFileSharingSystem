@@ -1,0 +1,106 @@
+Enter number of peers you want to test for between 3 to 10.
+File created: P0-1KB
+File created: P0-2KB
+File created: P0-3KB
+File created: P0-4KB
+File created: P0-5KB
+File created: P0-6KB
+File created: P0-7KB
+File created: P0-8KB
+File created: P0-9KB
+File created: P0-10KB
+File created: P1-1KB
+File created: P1-2KB
+File created: P1-3KB
+File created: P1-4KB
+File created: P1-5KB
+File created: P1-6KB
+File created: P1-7KB
+File created: P1-8KB
+File created: P1-9KB
+File created: P1-10KB
+File created: P2-1KB
+File created: P2-2KB
+File created: P2-3KB
+File created: P2-4KB
+File created: P2-5KB
+File created: P2-6KB
+File created: P2-7KB
+File created: P2-8KB
+File created: P2-9KB
+File created: P2-10KB
+Enter what kind of test do you want to run?
+1. Central Indexing Server methods verification.
+2. Peer Server test.
+3. Client sequential calls test.
+4. Client parallel calls test.
+Successfully Created the Central Indexing Server.
+Reading the shared directory: ./shared/0
+Sharing : P0-5KB
+Sharing : P0-1KB
+Sharing : P0-6KB
+Sharing : P0-2KB
+Sharing : P0-8KB
+Sharing : P0-10KB
+Sharing : P0-7KB
+Sharing : P0-9KB
+Sharing : P0-3KB
+Sharing : P0-4KB
+registry method invoked
+Reading the shared directory: ./shared/1
+Sharing : P1-5KB
+Sharing : P1-1KB
+Sharing : P1-6KB
+Sharing : P1-8KB
+Sharing : P1-2KB
+Sharing : P1-7KB
+Sharing : P1-10KB
+Sharing : P1-3KB
+Sharing : P1-9KB
+Sharing : P1-4KB
+registry method invoked
+Reading the shared directory: ./shared/2
+Sharing : P2-1KB
+Sharing : P2-5KB
+Sharing : P2-10KB
+Sharing : P2-8KB
+Sharing : P2-2KB
+Sharing : P2-6KB
+Sharing : P2-3KB
+Sharing : P2-9KB
+Sharing : P2-7KB
+Sharing : P2-4KB
+registry method invoked
+DeRegistry Started for PeerId: rmi://localhost:3000/peerServer-7035
+File got deregister | FileName: P0-5KB
+File got deregister | FileName: P0-1KB
+File got deregister | FileName: P0-6KB
+File got deregister | FileName: P0-2KB
+File got deregister | FileName: P0-8KB
+File got deregister | FileName: P0-10KB
+File got deregister | FileName: P0-7KB
+File got deregister | FileName: P0-9KB
+File got deregister | FileName: P0-3KB
+File got deregister | FileName: P0-4KB
+DeRegistry Started for PeerId: rmi://localhost:3000/peerServer-2707
+File got deregister | FileName: P1-5KB
+File got deregister | FileName: P1-1KB
+File got deregister | FileName: P1-6KB
+File got deregister | FileName: P1-8KB
+File got deregister | FileName: P1-2KB
+File got deregister | FileName: P1-7KB
+File got deregister | FileName: P1-10KB
+File got deregister | FileName: P1-3KB
+File got deregister | FileName: P1-9KB
+File got deregister | FileName: P1-4KB
+DeRegistry Started for PeerId: rmi://localhost:3000/peerServer-230
+File got deregister | FileName: P2-1KB
+File got deregister | FileName: P2-5KB
+File got deregister | FileName: P2-10KB
+File got deregister | FileName: P2-8KB
+File got deregister | FileName: P2-2KB
+File got deregister | FileName: P2-6KB
+File got deregister | FileName: P2-3KB
+File got deregister | FileName: P2-9KB
+File got deregister | FileName: P2-7KB
+File got deregister | FileName: P2-4KB

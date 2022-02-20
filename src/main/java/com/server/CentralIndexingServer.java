@@ -31,7 +31,7 @@ public class CentralIndexingServer extends UnicastRemoteObject implements Centra
             LocateRegistry.createRegistry(port);
             Naming.bind(centralIndexingServer, this);
             Naming.lookup(centralIndexingServer);
-            System.out.println("Success: Successfully Created the Registry");
+            System.out.println("Successfully Created the Central Indexing Server.");
         } catch (MalformedURLException | AlreadyBoundException | NotBoundException e) {
             e.printStackTrace();
         }

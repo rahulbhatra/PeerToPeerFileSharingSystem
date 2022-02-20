@@ -16,7 +16,7 @@ public class CentralIndexingServerThread extends Thread {
                     ConstantsUtil.CENTRAL_INDEXING_SERVER);
             Naming.lookup(ConstantsUtil.CENTRAL_INDEXING_SERVER);
         } catch (Exception ex) {
-            System.err.println("EXCEPTION: CentralServer Exception while creating server: " + ex.toString());
+            System.err.println(ConstantsUtil.CENTRAL_INDEXING_SERVER_EXCEPTION + ex);
             ex.printStackTrace();
         }
     }

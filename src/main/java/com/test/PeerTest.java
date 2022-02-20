@@ -13,6 +13,7 @@ import com.threads.PeerTestThread;
 import com.utility.ConstantsUtil;
 import com.utility.FileUtil;
 import com.utility.TestResultsUtil;
+
 import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.util.*;
@@ -21,7 +22,7 @@ public class PeerTest extends Thread {
 
     public static void parallelPeerTesting(int numberOfPeers) {
         String sharedDirectory = ConstantsUtil.shared;
-        System.out.println("Initializing " + numberOfPeers + " number of peers for multithreaded environment.");
+        System.out.println("Initializing " + numberOfPeers + " number of peers for multithreaded testing.");
         PeerTestThread[] peerTestThreads = new PeerTestThread[numberOfPeers];
         Peer[] peers = new Peer[numberOfPeers];
         Map<Integer, TestResults> testResults = new HashMap<>();
@@ -45,7 +46,7 @@ public class PeerTest extends Thread {
                 testResults.put(peer.getPeerNumber(), new TestResults());
                 peerTestThreads[i] = new PeerTestThread(directory, peer, firstPeer, sharedFiles, testResults, centralIndexingServerInterface);
                 new PeerServer(peer.getId(), ConstantsUtil.PEER_SERVER, directory);
-                System.out.println("Peer is is registered with central indexing server and is ready | PeerId: "
+                System.out.println(ConstantsUtil.PEER_REGISTRATION_DONE
                         + peer.getId() + " | Peer Number: " + peer.getPeerNumber());
 
             }
@@ -66,7 +67,7 @@ public class PeerTest extends Thread {
 
     public static void sequentialTesting(int numberOfPeers) {
         String sharedDirectory = "./shared";
-        System.out.println("Initializing " + numberOfPeers + " number of peers for sequential environment.");
+        System.out.println("Initializing " + numberOfPeers + " number of peers for sequential testing.");
         Peer[] peers = new Peer[numberOfPeers];
         Map<Integer, TestResults> testResults = new HashMap<>();
         int totalFileCounts = 0;
@@ -81,7 +82,7 @@ public class PeerTest extends Thread {
                 totalFileCounts += sharedFiles.size();
                 Peer peer = centralIndexingServerInterface.registry("", ConstantsUtil.PEER_SERVER, sharedFiles);
                 new PeerServer(peer.getId(), ConstantsUtil.PEER_SERVER, directory);
-                System.out.println("Peer is is registered with central indexing server and is ready | PeerId: "
+                System.out.println(ConstantsUtil.PEER_REGISTRATION_DONE
                         + peer.getId() + " | Peer Number: " + peer.getPeerNumber());
 
                 peers[i] = peer;
@@ -97,8 +98,8 @@ public class PeerTest extends Thread {
                     PeerServerInterface peerServerInterface = (PeerServerInterface) Naming.lookup(firstPeer.getId());
                     TestResultsUtil.getRetrievalResults(firstPeer, peer, directory, testResults.get(peer.getPeerNumber()), peerServerInterface);
                     TestResultsUtil.getSearchResults(firstPeer, peer, testResults.get(peer.getPeerNumber()), centralIndexingServerInterface);
-                    System.out.println("Exiting Peer " + peer.getPeerNumber());
                     directoryWatcher.endLogging();
+                    System.out.println("Exiting Peer " + peer.getPeerNumber());
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -123,9 +124,9 @@ public class PeerTest extends Thread {
                     ", retrieval end = " + tr.getRetrieveEndTime());
         }
         System.out.println("Total retrieval time for all peers = " + totalRetrievalTime + " Number of request made: " + numberOfRequest);
-        Double averageRetrievalTime = totalRetrievalTime /  numberOfRequest;
+        Double averageRetrievalTime = totalRetrievalTime / numberOfRequest;
         System.out.println("Average retrieval time for one peer = " + averageRetrievalTime);
-        System.out.println(ConstantsUtil.Ending_RESULTS);
+        System.out.println(ConstantsUtil.ENDING_RESULTS);
 
         System.out.println(ConstantsUtil.STARTING_RESULTS);
         Double totalSearchTime = 0.0;
@@ -141,7 +142,7 @@ public class PeerTest extends Thread {
         Double averageSearchTime = totalSearchTime / numberOfRequest;
         System.out.println("Average search time for one peer = " + averageSearchTime);
 
-        System.out.println(ConstantsUtil.Ending_RESULTS);
+        System.out.println(ConstantsUtil.ENDING_RESULTS);
         System.out.println("Test is ending");
     }
 }

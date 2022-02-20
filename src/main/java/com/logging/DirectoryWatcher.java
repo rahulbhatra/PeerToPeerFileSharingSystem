@@ -20,7 +20,7 @@ public class DirectoryWatcher {
             this.path.register(watchService, new WatchEvent.Kind[]
                     {ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY}, SensitivityWatchEventModifier.HIGH);
         } catch (IOException ioException) {
-            System.err.println(DirectoryWatcher.class.getName() + ": IOException while creating Watch Service: " + ioException);
+            System.err.println(DirectoryWatcher.class.getName() + ": IOException while creating Watch Service: ");
             ioException.printStackTrace();
         }
     }
@@ -46,7 +46,7 @@ public class DirectoryWatcher {
                 }
                 watchKey.reset();
             } catch (InterruptedException interruptedException) {
-                System.err.println(DirectoryWatcher.class.getName() + ": InterruptedException while starting the Watch Service: " + interruptedException);
+                System.err.println(DirectoryWatcher.class.getName() + ": InterruptedException while starting the Watch Service: ");
                 interruptedException.printStackTrace();
                 return;
             } catch (ClosedWatchServiceException closedWatchServiceException) {

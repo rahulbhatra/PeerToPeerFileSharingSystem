@@ -16,5 +16,7 @@ public class ConstantsUtil {
     public final static String PEER2_DIRECTORY = "./shared/1";
     public final static String PEER3_DIRECTORY = "./shared/2";
     public final static String STARTING_RESULTS = "******************** Starting to Get Results ************************";
-    public final static String Ending_RESULTS = "*********************** Ending to Get Results ************************";
+    public final static String ENDING_RESULTS = "*********************** Ending to Get Results ************************";
+    public final static String PEER_REGISTRATION_DONE = "Peer is is registered with central indexing server and is ready | PeerId: ";
+    public final static String CENTRAL_INDEXING_SERVER_EXCEPTION = "While Creating Central Indexing Server had an error!";
 }
