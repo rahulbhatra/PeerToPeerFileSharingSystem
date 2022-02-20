@@ -63,7 +63,7 @@ public class DirectoryWatcher {
             this.watchService.close();
             this.keepWatching = false;
         } catch (IOException ioException) {
-            System.err.println(DirectoryWatcher.class.getName() + " Exception while ending Watch Service: ");
+            System.err.println(DirectoryWatcher.class.getName() + " Exception while ending watch service.");
             ioException.printStackTrace();
         }
     }
