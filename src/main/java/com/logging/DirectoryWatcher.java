@@ -12,9 +12,6 @@ public class DirectoryWatcher {
     private Path path;
     private Boolean keepWatching;
     private WatchService watchService;
-    private static <T> WatchEvent<T> cast(WatchEvent<?> event) {
-        return (WatchEvent<T>) event;
-    }
 
     public DirectoryWatcher(String directory) {
         try {
@@ -22,9 +19,9 @@ public class DirectoryWatcher {
             this.watchService = FileSystems.getDefault().newWatchService();
             this.path.register(watchService, new WatchEvent.Kind[]
                     {ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY}, SensitivityWatchEventModifier.HIGH);
-        } catch (IOException ioe) {
-            System.err.println(DirectoryWatcher.class.getName() + ": IOException while creating Watch Service: " + ioe);
-            ioe.printStackTrace();
+        } catch (IOException ioException) {
+            System.err.println(DirectoryWatcher.class.getName() + ": IOException while creating Watch Service: " + ioException);
+            ioException.printStackTrace();
         }
     }
 
@@ -35,7 +32,7 @@ public class DirectoryWatcher {
             try {
                 watchKey = watchService.take();
                 for (WatchEvent<?> event : watchKey.pollEvents()) {
-                    WatchEvent<Path> watchEvent = cast(event);
+                    WatchEvent<Path> watchEvent = this.cast(event);
                     Path filePath = watchEvent.context();
                     callable.call();
 
@@ -68,5 +65,9 @@ public class DirectoryWatcher {
             System.err.println(DirectoryWatcher.class.getName() + ": IOException while ending Watch Service: " + ioException);
             ioException.printStackTrace();
         }
+    }
+
+    private static <T> WatchEvent<T> cast(WatchEvent<?> event) {
+        return (WatchEvent<T>) event;
     }
 }

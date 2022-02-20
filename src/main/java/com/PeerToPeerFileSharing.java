@@ -11,7 +11,15 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Scanner;
 
-public class main {
+/**
+ * To Compile using command line use the following command line instructions.
+ *  1. run cd src/main/java/com
+ *  2. javac -cp jars/commons-io-2.8.0.jar models/*.java interfaces/*.java logging/*.java server/*.java utility/*.java threads/*.java test/*.java PeerToPeerFileSharing.java
+ *  3. run cd ..
+ *  4. java -cp com/jars/commons-io-2.8.0.jar:. com.PeerToPeerFileSharing
+ */
+public class PeerToPeerFileSharing {
+
     public static void main(String[] args) {
 
         Scanner scanner = new Scanner(System.in);

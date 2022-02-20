@@ -7,14 +7,11 @@ import com.server.CentralIndexingServer;
 import com.server.PeerServer;
 import com.utility.ConstantsUtil;
 import com.utility.FileUtil;
-import org.junit.Test;
 
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-
 public class CentralIndexingServerTest {
-    @Test
+
     public static void clientIndexingServer() {
         try{
             String peer1Directory = ConstantsUtil.PEER1_DIRECTORY;

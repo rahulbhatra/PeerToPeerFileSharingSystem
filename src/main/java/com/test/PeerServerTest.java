@@ -7,11 +7,6 @@ import com.server.CentralIndexingServer;
 import com.server.PeerServer;
 import com.utility.FileUtil;
 import com.utility.ConstantsUtil;
-import org.apache.commons.collections4.CollectionUtils;
-
-import java.net.MalformedURLException;
-import java.rmi.Naming;
-import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.util.List;
 import java.util.Scanner;
@@ -44,7 +39,7 @@ public class PeerServerTest {
                 if (fileName != null) {
                     fileName = fileName.trim();
                     List<PeerServerInterface> peerServerInterfaces = centralIndexingServer.search(fileName);
-                    if (CollectionUtils.isEmpty(peerServerInterfaces)) {
+                    if (peerServerInterfaces == null || peerServerInterfaces.size() == 0) {
                         System.err.println(ConstantsUtil.FILE_NOT_FOUND_ERROR);
                         continue;
                     }
