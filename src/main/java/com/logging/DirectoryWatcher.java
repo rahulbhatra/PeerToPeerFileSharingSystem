@@ -6,8 +6,6 @@ import java.io.IOException;
 import java.nio.file.*;
 import java.util.concurrent.Callable;
 
-import static java.nio.file.StandardWatchEventKinds.*;
-
 public class DirectoryWatcher {
     private Path path;
     private Boolean keepWatching;
@@ -18,37 +16,40 @@ public class DirectoryWatcher {
             this.path = Paths.get(directory);
             this.watchService = FileSystems.getDefault().newWatchService();
             this.path.register(watchService, new WatchEvent.Kind[]
-                    {ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY}, SensitivityWatchEventModifier.HIGH);
+                    {
+                            StandardWatchEventKinds.ENTRY_CREATE,
+                            StandardWatchEventKinds.ENTRY_DELETE,
+                            StandardWatchEventKinds.ENTRY_MODIFY
+                    }, SensitivityWatchEventModifier.HIGH);
         } catch (IOException ioException) {
             System.err.println(DirectoryWatcher.class.getName() + ": IOException while creating Watch Service: ");
             ioException.printStackTrace();
         }
     }
 
-    public void beginLogging(Callable<Void> callable) {
+    public void beginWatchingChanges(Callable<Void> callable) {
         this.keepWatching = true;
         while (this.keepWatching) {
             WatchKey watchKey;
             try {
                 watchKey = watchService.take();
                 for (WatchEvent<?> event : watchKey.pollEvents()) {
-                    WatchEvent<Path> watchEvent = this.cast(event);
+                    WatchEvent<Path> watchEvent = (WatchEvent<Path>) event;
                     Path filePath = watchEvent.context();
                     callable.call();
 
-                    if (ENTRY_CREATE == event.kind()) {
-                        System.out.println(ENTRY_CREATE + "-" + filePath.getFileName());
-                    } else if (ENTRY_DELETE == event.kind()) {
-                        System.out.println(ENTRY_DELETE + "-" + filePath.getFileName());
-                    } else if (ENTRY_MODIFY == event.kind()) {
-                        System.out.println(ENTRY_MODIFY + "-" + filePath.getFileName());
+                    if (StandardWatchEventKinds.ENTRY_CREATE == event.kind()) {
+                        System.out.println(StandardWatchEventKinds.ENTRY_CREATE + "-" + filePath.getFileName());
+                    } else if (StandardWatchEventKinds.ENTRY_DELETE == event.kind()) {
+                        System.out.println(StandardWatchEventKinds.ENTRY_DELETE + "-" + filePath.getFileName());
+                    } else if (StandardWatchEventKinds.ENTRY_MODIFY == event.kind()) {
+                        System.out.println(StandardWatchEventKinds.ENTRY_MODIFY + "-" + filePath.getFileName());
                     }
                 }
                 watchKey.reset();
             } catch (InterruptedException interruptedException) {
-                System.err.println(DirectoryWatcher.class.getName() + ": InterruptedException while starting the Watch Service: ");
+                System.err.println(DirectoryWatcher.class.getName() + " Exception while creating the watch service.");
                 interruptedException.printStackTrace();
-                return;
             } catch (ClosedWatchServiceException closedWatchServiceException) {
                 System.out.println("Closed Watch Service Exception | completely fine to have this");
             } catch (Exception exception) {
@@ -57,17 +58,13 @@ public class DirectoryWatcher {
         }
     }
 
-    public void endLogging() {
+    public void endWatchingChanges() {
         try {
-            this.keepWatching = false;
             this.watchService.close();
+            this.keepWatching = false;
         } catch (IOException ioException) {
-            System.err.println(DirectoryWatcher.class.getName() + ": IOException while ending Watch Service: " + ioException);
+            System.err.println(DirectoryWatcher.class.getName() + " Exception while ending Watch Service: ");
             ioException.printStackTrace();
         }
-    }
-
-    private static <T> WatchEvent<T> cast(WatchEvent<?> event) {
-        return (WatchEvent<T>) event;
     }
 }

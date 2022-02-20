@@ -1,6 +1,7 @@
 package com.server;
 
 import com.interfaces.PeerServerInterface;
+import com.models.Peer;
 import com.models.PeerFile;
 
 import java.io.*;
@@ -45,7 +46,7 @@ public class PeerServer extends UnicastRemoteObject implements PeerServerInterfa
 
     @Override
     public synchronized void retrieve(String clientPeerId, String clientPeerDirectory, String fileName) throws RemoteException {
-        System.out.println("Peer" +  clientPeerId + " is asking to get the file info of " + fileName);
+        System.out.println(Peer.class.getName() + " " + clientPeerId + " is asking to get the file info of " + fileName);
         try {
             PeerFile peerFile =  new PeerFile(Files.readAllBytes(Paths.get(this.directory + "/" + fileName)), fileName);
             File file = new File(clientPeerDirectory, peerFile.getFileName());

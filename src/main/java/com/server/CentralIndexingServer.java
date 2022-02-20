@@ -63,6 +63,7 @@ public class CentralIndexingServer extends UnicastRemoteObject implements Centra
             } else if (!fileNamePeerIdsMap.get(fileName).contains(id)) {
                 fileNamePeerIdsMap.get(fileName).add(id);
             }
+            System.out.println("File got register | FileName: " + fileName);
         }
         return peerIdObjectMap.get(id);
     }

@@ -98,7 +98,7 @@ public class PeerTest extends Thread {
                     PeerServerInterface peerServerInterface = (PeerServerInterface) Naming.lookup(firstPeer.getId());
                     TestResultsUtil.getRetrievalResults(firstPeer, peer, directory, testResults.get(peer.getPeerNumber()), peerServerInterface);
                     TestResultsUtil.getSearchResults(firstPeer, peer, testResults.get(peer.getPeerNumber()), centralIndexingServerInterface);
-                    directoryWatcher.endLogging();
+                    directoryWatcher.endWatchingChanges();
                     System.out.println("Exiting Peer " + peer.getPeerNumber());
                 } catch (Exception e) {
                     e.printStackTrace();

@@ -28,7 +28,7 @@ public class DirectoryLogsThread extends Thread {
     @Override
     public void run() {
         System.out.println("Directory logging thread is getting started for peer id: " + peerId);
-        directoryLogs.beginLogging(new Callable<Void>() {
+        directoryLogs.beginWatchingChanges(new Callable<Void>() {
             public Void call() {
                 try {
                     // If any change is detected, the peer needs to read the directory again

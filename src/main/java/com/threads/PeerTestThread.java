@@ -47,7 +47,7 @@ public class PeerTestThread extends Thread {
             TestResultsUtil.getRetrievalResults(firstPeer, peer, directory, testResults.get(peer.getPeerNumber()), peerServerInterface);
             TestResultsUtil.getSearchResults(firstPeer, peer, testResults.get(peer.getPeerNumber()), centralIndexingServerInterface);
             System.out.println("Exiting Peer " + peer.getPeerNumber());
-            directoryWatcher.endLogging();
+            directoryWatcher.endWatchingChanges();
         } catch (Exception e) {
             e.printStackTrace();
         }
