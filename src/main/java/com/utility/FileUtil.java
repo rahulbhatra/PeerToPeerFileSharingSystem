@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,18 +19,19 @@ public class FileUtil {
 
     public static void retrieveFile(
             final Peer clientPeer,
-            final Peer serverPeer,
             final String filename,
             final String clientDirectory,
-            final PeerServerInterface peerServerInterface) {
-        System.out.println("Retrieving file " + filename + " from peer " + serverPeer.getId() + "'. You'll be notified when it finishes.");
+            final PeerServerInterface peerServerInterface) throws RemoteException {
+        String serverPeerId = peerServerInterface.getPeerId();
+        System.out.println("Retrieving file " + filename + " from peer " + serverPeerId + "'. You'll be notified when it finishes.");
         Thread t_retrieve = new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
-                    System.out.println("File retrieval started from peerId: " + serverPeer.getId() + " | Time:" + System.currentTimeMillis());
-                    peerServerInterface.retrieve(serverPeer.getId(), clientDirectory, filename);
-                    System.out.println("File retrieval done from peerId: " + serverPeer.getId() + " | Time:" + System.currentTimeMillis());
+
+                    System.out.println("File retrieval started from peerId: " + serverPeerId + " | Time:" + System.currentTimeMillis());
+                    peerServerInterface.retrieve(clientPeer.getId(), clientDirectory, filename);
+                    System.out.println("File retrieval done from peerId: " + serverPeerId + " | Time:" + System.currentTimeMillis());
                 } catch (Exception exception) {
                     exception.printStackTrace();
                 }
@@ -99,6 +101,12 @@ public class FileUtil {
         for(int i = 0; i < numberOfPeers; i++) {
             for(int j = 0; j < 10; j++) {
                 createFile("P" + i + "-" + (j + 1) + "KB", ConstantsUtil.shared + "/" + i, j + 1);
+            }
+        }
+
+        for(int i = 0; i < 2; i++) {
+            for(int j = 0; j < 5; j++) {
+                createFile("P" + 0 + "-" + (j + 1) + "KB", ConstantsUtil.shared + "/" + i, j + 1);
             }
         }
     }

@@ -33,6 +33,11 @@ public class PeerServer extends UnicastRemoteObject implements PeerServerInterfa
         }
     }
 
+    @Override
+    public String getPeerId() throws RemoteException {
+        return id;
+    }
+
     protected PeerServer() throws RemoteException {
     }
 

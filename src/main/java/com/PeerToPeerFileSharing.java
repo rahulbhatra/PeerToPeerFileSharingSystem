@@ -58,7 +58,7 @@ public class PeerToPeerFileSharing {
                     isCorrectInput = true;
                     break;
                 case 2:
-                    PeerServerTest.peerServerTest();
+                    PeerServerTest.peerServerTest(numberOfPeers);
                     isCorrectInput = true;
                     break;
                 case 3:

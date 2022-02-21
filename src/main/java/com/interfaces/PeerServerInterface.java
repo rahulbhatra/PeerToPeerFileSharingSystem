@@ -7,4 +7,5 @@ import java.rmi.RemoteException;
 
 public interface PeerServerInterface extends Remote {
     void retrieve(String clientPeerId, String clientPeerDirectory, String fileName) throws RemoteException;
+    String getPeerId() throws RemoteException;
 }

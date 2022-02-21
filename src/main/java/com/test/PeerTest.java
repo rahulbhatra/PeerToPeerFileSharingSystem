@@ -50,7 +50,6 @@ public class PeerTest extends Thread {
                         + peer.getId() + " | Peer Number: " + peer.getPeerNumber());
 
             }
-
             for (int i = 0; i < numberOfPeers; i++) {
                 peerTestThreads[i].start();
             }

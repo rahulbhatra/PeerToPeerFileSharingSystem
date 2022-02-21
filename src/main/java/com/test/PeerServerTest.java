@@ -14,17 +14,20 @@ import java.util.Scanner;
 public class PeerServerTest {
 
 
-    public static void peerServerTest() {
-        String serverDirectory = ConstantsUtil.PEER1_DIRECTORY;
-        String clientDirectory = ConstantsUtil.PEER2_DIRECTORY;
+    public static void peerServerTest(int numberOfPeers) {
+
+        String clientDirectory = ConstantsUtil.shared + "/" + (numberOfPeers - 1);
         try {
             CentralIndexingServer centralIndexingServer = new CentralIndexingServer(Integer.parseInt(ConstantsUtil.PORT),
                     ConstantsUtil.CENTRAL_INDEXING_SERVER);
 
             // Peer Server: from here we are going to copy our files.
-            List<String> serverFileNames = FileUtil.readSharedDirectory(true, serverDirectory);
-            Peer serverPeer = centralIndexingServer.registry("", ConstantsUtil.PEER_SERVER, serverFileNames);
-            PeerServerInterface peerServerInterface = new PeerServer(serverPeer.getId(), ConstantsUtil.PEER_SERVER, serverDirectory);
+            for(int i = 0; i < numberOfPeers - 1; i ++) {
+                List<String> serverFileNames = FileUtil.readSharedDirectory(true, ConstantsUtil.shared + "/" + i);
+                Peer serverPeer = centralIndexingServer.registry("", ConstantsUtil.PEER_SERVER, serverFileNames);
+                PeerServerInterface peerServerInterface = new PeerServer(serverPeer.getId(), ConstantsUtil.PEER_SERVER, ConstantsUtil.shared + "/" + i);
+            }
+
 
             // Peer Client:  here we are going to paste our files.
             List<String> clientFileNames = FileUtil.readSharedDirectory(false, clientDirectory);
@@ -45,7 +48,19 @@ public class PeerServerTest {
                     }
                     DirectoryWatcher directoryWatcher = new DirectoryWatcher(clientDirectory);
                     FileUtil.startDirectoryLogging(clientPeer, clientDirectory, clientFileNames, directoryWatcher, centralIndexingServer);
-                    FileUtil.retrieveFile(clientPeer, serverPeer, fileName, clientDirectory, peerServerInterfaces.get(0));
+
+                    System.out.println("Select Peer from which you want to download file.");
+                    for (int i = 0; i < peerServerInterfaces.size(); i++) {
+                        String peerId = peerServerInterfaces.get(i).getPeerId();
+                        System.out.println((i + 1) + ". " + peerId);
+                    }
+
+                    int peerSelection = scanner.nextInt();
+                    if (peerSelection < 1 || peerSelection > peerServerInterfaces.size()) {
+                        System.out.println("Please select value between " + 1 + " and " + peerServerInterfaces.size());
+                        continue;
+                    }
+                    FileUtil.retrieveFile(clientPeer, fileName, clientDirectory, peerServerInterfaces.get(peerSelection - 1));
                     break;
                 }
             }
