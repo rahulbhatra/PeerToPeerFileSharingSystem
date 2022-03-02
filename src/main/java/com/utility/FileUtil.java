@@ -1,46 +1,55 @@
 package com.utility;
 
-import com.interfaces.CentralIndexingServerInterface;
 import com.interfaces.PeerServerInterface;
 import com.logging.DirectoryWatcher;
 import com.models.Peer;
-import com.models.PeerFile;
 import com.threads.DirectoryLogsThread;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.rmi.Naming;
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class FileUtil {
 
     public static void retrieveFile(
-            final Peer clientPeer,
+            final Integer peerId,
+            final Integer serverPeerId,
             final String filename,
-            final String clientDirectory,
-            final PeerServerInterface peerServerInterface) throws RemoteException {
-        String serverPeerId = peerServerInterface.getPeerId();
-        System.out.println("Retrieving file " + filename + " from peer " + serverPeerId + "'. You'll be notified when it finishes.");
-        Thread t_retrieve = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
+            final String clientDirectory) throws RemoteException {
 
-                    System.out.println("File retrieval started from peerId: " + serverPeerId + " | Time:" + System.currentTimeMillis());
-                    peerServerInterface.retrieve(clientPeer.getId(), clientDirectory, filename);
-                    System.out.println("File retrieval done from peerId: " + serverPeerId + " | Time:" + System.currentTimeMillis());
-                } catch (Exception exception) {
-                    exception.printStackTrace();
+        try {
+            final PeerServerInterface peerServerInterface = (PeerServerInterface) Naming.lookup(ConstantsUtil.PEER_SERVER + "-" + serverPeerId);
+            System.out.println("Retrieving file " + filename + " from peer " + serverPeerId + "'. You'll be notified when it finishes.");
+            Thread t_retrieve = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+
+                        System.out.println("File retrieval started from peerId: " + serverPeerId + " | Time:" + System.currentTimeMillis());
+                        peerServerInterface.retrieve(peerId, clientDirectory, filename);
+                        System.out.println("File retrieval done from peerId: " + serverPeerId + " | Time:" + System.currentTimeMillis());
+                    } catch (Exception exception) {
+                        exception.printStackTrace();
+                    }
+
+                    System.out.println(ConstantsUtil.DOWNLOAD_COMPLETED + filename);
+                    return;
                 }
-
-                System.out.println(ConstantsUtil.DOWNLOAD_COMPLETED + filename);
-                return;
-            }
-        });
-        t_retrieve.start();
+            });
+            t_retrieve.start();
+        } catch (NotBoundException e) {
+            e.printStackTrace();
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
     }
 
     public static List<String> readSharedDirectory(boolean showFileNames, String directory) {
@@ -64,13 +73,12 @@ public class FileUtil {
         return filenames;
     }
 
-    public static void startDirectoryLogging(Peer peer, String directory, List<String> sharedFiles,
-                                      DirectoryWatcher directoryWatcher,
-                                      CentralIndexingServerInterface centralIndexingServerInterface) {
-        directoryWatcher = new DirectoryWatcher(directory);
-        DirectoryLogsThread directoryLogsThread = new DirectoryLogsThread(directoryWatcher, directory, peer.getId(),
-                sharedFiles,
-                centralIndexingServerInterface);
+    public static void startDirectoryLogging(Integer peerId, Integer superPeerId) {
+        String directory = ConstantsUtil.shared + "/" + peerId;
+        List<String> sharedFiles = FileUtil.readSharedDirectory(true, directory);
+        DirectoryWatcher directoryWatcher = new DirectoryWatcher(directory);
+        DirectoryLogsThread directoryLogsThread = new DirectoryLogsThread(peerId, superPeerId, directoryWatcher, directory,
+                sharedFiles);
         directoryLogsThread.start();
     }
 
@@ -104,10 +112,30 @@ public class FileUtil {
             }
         }
 
-        for(int i = 0; i < 2; i++) {
-            for(int j = 0; j < 5; j++) {
-                createFile("P" + 0 + "-" + (j + 1) + "KB", ConstantsUtil.shared + "/" + i, j + 1);
+        if (numberOfPeers > 8) {
+            for(int i = 0; i < 2; i++) {
+                for(int j = 0; j < 5; j++) {
+                    createFile("P" + 0 + "-" + (j + 1) + "KB", ConstantsUtil.shared + "/" + i, j + 1);
+                }
+            }
+
+            for(int i = 2; i < 4; i++) {
+                for(int j = 5; j < 10; j++) {
+                    createFile("P" + 0 + "-" + (j + 1) + "KB", ConstantsUtil.shared + "/" + i, j + 1);
+                }
             }
         }
+    }
+
+    public static Set<String> getAllFiles(int notIncludePeerId, int numberOfPeers) {
+        Set<String> totalFiles = new HashSet<>();
+        for( int i = 0; i < numberOfPeers; i++) {
+            if (notIncludePeerId == i) {
+                continue;
+            }
+            List<String> directoryFiles = FileUtil.readSharedDirectory(false, ConstantsUtil.shared + "/" + i);
+            totalFiles.addAll(new HashSet<>(directoryFiles));
+        }
+        return totalFiles;
     }
 }

@@ -4,30 +4,40 @@ import java.io.Serializable;
 import java.util.List;
 
 public class Peer implements Serializable {
-    private String id;
-    private Integer peerNumber;
+    private String peerId;
+    private Integer id;
+    private Integer superPeerId;
     private List<String> files;
 
-    public Peer(String id, Integer peerNumber, List<String> files) {
-        this.id = id;
-        this.peerNumber = peerNumber;
+    public Peer(Integer peerNumber, Integer superPeerId, String peerId, List<String> files) {
+        this.id = peerNumber;
+        this.superPeerId = superPeerId;
+        this.peerId = peerId;
         this.files = files;
     }
 
-    public String getId() {
+    public String getPeerId() {
+        return peerId;
+    }
+
+    public void setPeerId(String peerId) {
+        this.peerId = peerId;
+    }
+
+    public Integer getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public Integer getSuperPeerId() {
+        return superPeerId;
+    }
+
+    public void setSuperPeerId(Integer superPeerId) {
+        this.superPeerId = superPeerId;
+    }
+
+    public void setId(Integer id) {
         this.id = id;
-    }
-
-    public Integer getPeerNumber() {
-        return peerNumber;
-    }
-
-    public void setPeerNumber(Integer peerNumber) {
-        this.peerNumber = peerNumber;
     }
 
     public List<String> getFiles() {

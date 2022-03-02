@@ -3,12 +3,12 @@ package com.server;
 import com.interfaces.PeerServerInterface;
 import com.models.Peer;
 import com.models.PeerFile;
+import com.utility.ConstantsUtil;
 
 import java.io.*;
 import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.rmi.AlreadyBoundException;
 import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.rmi.server.RMIClientSocketFactory;
@@ -17,25 +17,38 @@ import java.rmi.server.UnicastRemoteObject;
 
 public class PeerServer extends UnicastRemoteObject implements PeerServerInterface {
 
-    private String id;
+    private Integer id;
+    private Integer superPeerId;
     private String directory;
+    private String peerLookUpId;
 
-    public PeerServer(String peerId, String peerServer, String directory) throws RemoteException {
-        this.id = peerId;
-        this.directory = directory;
+    public PeerServer(Integer id, Integer superPeerId) throws RemoteException {
+        this.id = id;
+        this.superPeerId = superPeerId;
+        this.directory = ConstantsUtil.shared + "/" + id;
+        this.peerLookUpId = ConstantsUtil.PEER_SERVER + "-" + id;
 
         try {
-            Naming.bind(peerId, this);
-        } catch (AlreadyBoundException e) {
-            e.printStackTrace();
+
+            Naming.rebind(this.peerLookUpId, this);
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
     }
 
     @Override
-    public String getPeerId() throws RemoteException {
-        return id;
+    public String getPeerLookUpId() throws RemoteException {
+        return this.peerLookUpId;
+    }
+
+    @Override
+    public Integer getId() throws RemoteException {
+        return this.id;
+    }
+
+    @Override
+    public Integer getSuperPeerId() throws RemoteException {
+        return this.superPeerId;
     }
 
     protected PeerServer() throws RemoteException {
@@ -50,7 +63,8 @@ public class PeerServer extends UnicastRemoteObject implements PeerServerInterfa
     }
 
     @Override
-    public synchronized void retrieve(String clientPeerId, String clientPeerDirectory, String fileName) throws RemoteException {
+    public synchronized void retrieve(Integer id, String clientPeerDirectory, String fileName) throws RemoteException {
+        String clientPeerId = ConstantsUtil.PEER_SERVER + "-" + id;
         System.out.println(Peer.class.getName() + " " + clientPeerId + " is asking to get the file info of " + fileName);
         try {
             PeerFile peerFile =  new PeerFile(Files.readAllBytes(Paths.get(this.directory + "/" + fileName)), fileName);

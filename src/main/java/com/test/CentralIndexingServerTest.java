@@ -1,42 +1,50 @@
 package com.test;
 
-import com.interfaces.CentralIndexingServerInterface;
+import com.interfaces.SuperPeerServerInterface;
+
 import com.interfaces.PeerServerInterface;
-import com.models.Peer;
-import com.server.CentralIndexingServer;
 import com.server.PeerServer;
+import com.server.SuperPeerServer;
 import com.utility.ConstantsUtil;
 import com.utility.FileUtil;
-
+import java.rmi.Naming;
+import java.util.ArrayList;
 import java.util.List;
+import com.utility.JSONUtil;
+import org.json.*;
 
 public class CentralIndexingServerTest {
 
-    public static void clientIndexingServer() {
-        try{
-            String peer1Directory = ConstantsUtil.PEER1_DIRECTORY;
-            String peer2Directory = ConstantsUtil.PEER2_DIRECTORY;
-            String peer3Directory = ConstantsUtil.PEER3_DIRECTORY;
+    public static void clientIndexingServer(int bufferSize, int ttl, JSONArray superPeerToSuperPeerNeighbours, JSONArray superPeerToPeerNeighbours) {
 
-            CentralIndexingServerInterface centralIndexingServerInterface = new CentralIndexingServer(Integer.
-                    parseInt(ConstantsUtil.PORT), ConstantsUtil.CENTRAL_INDEXING_SERVER);
+        try {
+            int numberOfSuperPeers = superPeerToSuperPeerNeighbours.length();
+            for(int i = 0; i < numberOfSuperPeers; i++) {
+                SuperPeerServerInterface superPeer = new SuperPeerServer
+                        (i, ConstantsUtil.CENTRAL_INDEXING_SERVER, bufferSize, new ArrayList<>());
+            }
 
-            List<String> peer1Files = FileUtil.readSharedDirectory(true, peer1Directory);
-            Peer peer1 = centralIndexingServerInterface.registry("", ConstantsUtil.PEER_SERVER, peer1Files);
-            PeerServerInterface peer1ServerInterface = new PeerServer(peer1.getId(), ConstantsUtil.PEER_SERVER, peer1Directory);
+            // Connect to all neighbour super peers
+            for(int i = 0; i < numberOfSuperPeers; i++) {
+                JSONUtil jsonUtil = new JSONUtil<Integer>();
+                List<Integer> superPeerNeighbours = jsonUtil.getListFromJsonArray(superPeerToSuperPeerNeighbours.getJSONArray(i));
+                SuperPeerServerInterface centralIndexingServer = new SuperPeerServer
+                        (i, ConstantsUtil.CENTRAL_INDEXING_SERVER, bufferSize, superPeerNeighbours);
+            }
 
-            List<String> peer2Files = FileUtil.readSharedDirectory(true, peer2Directory);
-            Peer peer2 = centralIndexingServerInterface.registry("", ConstantsUtil.PEER_SERVER, peer2Files);
-            PeerServerInterface peer2ServerInterface = new PeerServer(peer2.getId(), ConstantsUtil.PEER_SERVER, peer2Directory);
+            // Connect to all neighbour peers
+            for(int i = 0; i < numberOfSuperPeers; i++) {
+                JSONUtil jsonUtil = new JSONUtil<Integer>();
 
-            List<String> peer3Files = FileUtil.readSharedDirectory(true, peer3Directory);
-            Peer peer3 = centralIndexingServerInterface.registry("", ConstantsUtil.PEER_SERVER, peer3Files);
-            PeerServerInterface peer3ServerInterface = new PeerServer(peer3.getId(), ConstantsUtil.PEER_SERVER, peer3Directory);
+                SuperPeerServerInterface superPeerInterface = (SuperPeerServerInterface) Naming.lookup(ConstantsUtil.CENTRAL_INDEXING_SERVER + "-" + i);
+                List<Integer> peerNeighbours = jsonUtil.getListFromJsonArray(superPeerToPeerNeighbours.getJSONArray(i));
+                for(Integer id : peerNeighbours) {
+                    List<String> files = FileUtil.readSharedDirectory(false, ConstantsUtil.shared + "/" + id);
+                    PeerServerInterface peerServerInterface = new PeerServer(id, i);
+                    superPeerInterface.registry(id, files);
+                }
+            }
 
-            centralIndexingServerInterface.search("P0-1KB");
-            centralIndexingServerInterface.deRegistry(peer1.getId(), peer1Files);
-            centralIndexingServerInterface.deRegistry(peer2.getId(), peer2Files);
-            centralIndexingServerInterface.deRegistry(peer3.getId(), peer3Files);
         }
         catch (Exception ex) {
             System.err.println("EXCEPTION: CentralServer Exception while creating server: " + ex);

@@ -1,0 +1,13 @@
+{
+  "topology": "simple",
+  "superPeerToSuperPeerNeighbours": [
+    [1],
+    [0]
+  ],
+  "superPeerToPeerNeighbours": [
+    [0],
+    [1]
+  ],
+  "bufferSize": 128,
+  "ttl": 4
+}
