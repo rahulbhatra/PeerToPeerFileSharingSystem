@@ -1,7 +1,7 @@
 package com.test;
 
 import com.interfaces.SuperPeerServerInterface;
-import com.interfaces.PeerServerInterface;
+import com.interfaces.LeafNodeServerInterface;
 import com.models.MessageID;
 import com.models.Query;
 import com.models.QueryHit;
@@ -22,7 +22,7 @@ public class PeerServerTest {
 
         try {
             // Need to do the initial setup of the connection.
-            CentralIndexingServerTest.clientIndexingServer(bufferSize, ttl, superPeerToSuperPeerNeighbours, superPeerToPeerNeighbours);
+            SuperPeerServerTest.clientIndexingServer(bufferSize, ttl, superPeerToSuperPeerNeighbours, superPeerToPeerNeighbours);
             while (true) {
                 Scanner scanner = new Scanner(System.in);
                 int peerId;
@@ -51,12 +51,12 @@ public class PeerServerTest {
                 System.out.println("You selected the following file | FileName: " + fileName);
 
                 SuperPeerServerInterface serverInterface = (SuperPeerServerInterface) Naming.lookup
-                        (ConstantsUtil.CENTRAL_INDEXING_SERVER + "-" + 0);
+                        (ConstantsUtil.SUPER_PEER_SERVER + "-" + 0);
 
                 if (fileName != null) {
                     String clientDirectory = ConstantsUtil.shared + "/" + peerId;
-                    PeerServerInterface peerServer = (PeerServerInterface) Naming.lookup(ConstantsUtil.PEER_SERVER + "-" + peerId);
-                    FileUtil.startDirectoryLogging(peerId, peerServer.getSuperPeerId());
+                    LeafNodeServerInterface peerServer = (LeafNodeServerInterface) Naming.lookup(ConstantsUtil.PEER_SERVER + "-" + peerId);
+                    FileUtil.startDirectoryLogging(peerServer.getPeer());
 
                     fileName = fileName.trim();
                     Query query = new Query(new MessageID(peerId, peerServer.getSuperPeerId(), 1), ttl, fileName);
@@ -82,7 +82,7 @@ public class PeerServerTest {
 
 
                     System.out.println("You selected the following peer " + queryHit.getPeerIds().get(serverPeerSelected - 1));
-                    FileUtil.retrieveFile(peerId, queryHit.getPeerIds().get(serverPeerSelected - 1), fileName, clientDirectory);
+                    FileUtil.retrieveFile(peerId, queryHit.getPeerIds().get(serverPeerSelected - 1), fileName);
                     break;
                 }
             }

@@ -1,7 +1,7 @@
 package com.server;
 
 import com.interfaces.SuperPeerServerInterface;
-import com.interfaces.PeerServerInterface;
+import com.interfaces.LeafNodeServerInterface;
 import com.models.MessageID;
 import com.models.Peer;
 import com.models.QueryHit;
@@ -24,7 +24,7 @@ public class SuperPeerServer extends UnicastRemoteObject implements SuperPeerSer
     private Integer superPeerNumber;
     private String superPeerLookUpId;
     private Map<String, List<String>> fileNamePeerIdsMap;
-    private Map<String, Peer> peerIdObjectMap;
+    private Map<String, List<String>> peerIdFilesMap;
     private Map<MessageID, Integer> queries;
     private Set<Integer> neighbourSuperPeerIds = new HashSet<>();;
 
@@ -32,7 +32,7 @@ public class SuperPeerServer extends UnicastRemoteObject implements SuperPeerSer
         super();
 
         fileNamePeerIdsMap = new ConcurrentHashMap<>();
-        peerIdObjectMap = new ConcurrentHashMap<>();
+        peerIdFilesMap = new ConcurrentHashMap<>();
 
         try {
             Random random = new Random();
@@ -74,13 +74,12 @@ public class SuperPeerServer extends UnicastRemoteObject implements SuperPeerSer
     }
 
     @Override
-    public synchronized Peer registry(Integer peerId, List<String> fileNames) throws RemoteException {
+    public synchronized void registry(Peer peer, List<String> fileNames) throws RemoteException {
         System.out.println("registry method invoked");
 
-        String peerLookUpId = ConstantsUtil.PEER_SERVER + "-" + peerId;
-        if(!peerIdObjectMap.containsKey(peerLookUpId)) {
-            Peer peer = new Peer(peerId, this.superPeerNumber, peerLookUpId, fileNames);
-            peerIdObjectMap.put(peerLookUpId, peer);
+        String peerLookUpId = peer.getPeerLookUpId();
+        if(!peerIdFilesMap.containsKey(peer.getPeerLookUpId())) {
+            peerIdFilesMap.put(peerLookUpId, fileNames);
         }
 
         for (String fileName : fileNames) {
@@ -91,37 +90,36 @@ public class SuperPeerServer extends UnicastRemoteObject implements SuperPeerSer
             }
             System.out.println("File got register | FileName: " + fileName);
         }
-        return peerIdObjectMap.get(peerLookUpId);
     }
 
     @Override
-    public synchronized List<PeerServerInterface> search(String fileName) throws RemoteException {
+    public synchronized List<LeafNodeServerInterface> search(String fileName) throws RemoteException {
         List<String> peerIds = fileNamePeerIdsMap.get(fileName);
-        List<PeerServerInterface> peerServerInterfaces = new ArrayList<>();
+        List<LeafNodeServerInterface> leafNodeServerInterfaces = new ArrayList<>();
         if(peerIds == null) {
-            return peerServerInterfaces;
+            return leafNodeServerInterfaces;
         }
         for (String peerId : peerIds) {
-            PeerServerInterface peerServerInterface = null;
+            LeafNodeServerInterface leafNodeServerInterface = null;
             try {
-                peerServerInterface = (PeerServerInterface) Naming.lookup(peerId);
+                leafNodeServerInterface = (LeafNodeServerInterface) Naming.lookup(peerId);
             } catch (NotBoundException e) {
                 e.printStackTrace();
             } catch (MalformedURLException e) {
                 e.printStackTrace();
             }
-            peerServerInterfaces.add(peerServerInterface);
+            leafNodeServerInterfaces.add(leafNodeServerInterface);
         }
-        return peerServerInterfaces;
+        return leafNodeServerInterfaces;
     }
 
     @Override
     public synchronized String deRegistry(Integer id, List<String> fileNames) throws RemoteException {
         String peerId = ConstantsUtil.PORT + "-" + id;
         System.out.println("DeRegistry Started for PeerId: " + id);
-        if (peerIdObjectMap.containsKey(peerId)) {
-            Peer peer = peerIdObjectMap.get(peerId);
-            List<String> updatedPeerFiles = new ArrayList<>(peer.getFiles());
+        if (peerIdFilesMap.containsKey(peerId)) {
+            List<String> oldFiles = peerIdFilesMap.get(peerId);
+            List<String> updatedPeerFiles = new ArrayList<>(oldFiles);
             for (String fileName : fileNames) {
                 if (updatedPeerFiles.contains(fileName)) {
                     updatedPeerFiles.remove(fileName);
@@ -131,8 +129,9 @@ public class SuperPeerServer extends UnicastRemoteObject implements SuperPeerSer
                 System.out.println("File got deregister | FileName: " + fileName);
             }
 
-            if (peer.getFiles().size() == 0) {
-                peerIdObjectMap.remove(peerId); //completely remove from the system as no files are remaining
+            peerIdFilesMap.put(peerId, updatedPeerFiles);
+            if (updatedPeerFiles.size() == 0) {
+                peerIdFilesMap.remove(peerId); //completely remove from the system as no files are remaining
             }
         }
         return "Success";
@@ -156,9 +155,9 @@ public class SuperPeerServer extends UnicastRemoteObject implements SuperPeerSer
             this.queries.put(query.getMessageId(), 0);
             QueryHit queryHit = new QueryHit();
 
-            List<PeerServerInterface> peerServerInterfaces = search(query.getFilename());
-            if (peerServerInterfaces != null) {
-                for (PeerServerInterface peerServer : peerServerInterfaces) {
+            List<LeafNodeServerInterface> leafNodeServerInterfaces = search(query.getFilename());
+            if (leafNodeServerInterfaces != null) {
+                for (LeafNodeServerInterface peerServer : leafNodeServerInterfaces) {
                     queryHit.getSuperPeerIds().add(this.superPeerNumber);
                     queryHit.getPeerIds().add(peerServer.getId());
                 }
@@ -168,7 +167,7 @@ public class SuperPeerServer extends UnicastRemoteObject implements SuperPeerSer
                 for (Integer neighbourSuperPeerId : this.neighbourSuperPeerIds) {
                     try {
                         SuperPeerServerInterface neighbourSuperPeer = (SuperPeerServerInterface) Naming.lookup
-                                (ConstantsUtil.CENTRAL_INDEXING_SERVER + "-" + neighbourSuperPeerId);
+                                (ConstantsUtil.SUPER_PEER_SERVER + "-" + neighbourSuperPeerId);
                         neighbourSuperPeer.getSuperPeerLookUpId();
                         System.out.println("Forwarding Query | MessageID :" + query.getMessageId() + " | FileName: " +
                                 query.getFilename() + " | TimeToLive: " + query.getTtl());

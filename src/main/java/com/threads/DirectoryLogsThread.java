@@ -1,4 +1,5 @@
 package com.threads;
+import com.interfaces.LeafNodeServerInterface;
 import com.interfaces.SuperPeerServerInterface;
 import com.logging.DirectoryWatcher;
 import com.utility.ConstantsUtil;
@@ -33,8 +34,9 @@ public class DirectoryLogsThread extends Thread {
                     // If any change is detected, the peer needs to read the directory again
                     System.out.println("Change detected in the shared directory. | Shared Directory : " + directory);
                     sharedFiles = FileUtil.readSharedDirectory(false, directory);
-                    SuperPeerServerInterface superPeerServerInterface = (SuperPeerServerInterface) Naming.lookup(ConstantsUtil.CENTRAL_INDEXING_SERVER + "-" + superPeerId);
-                    superPeerServerInterface.registry(peerId, sharedFiles);
+                    SuperPeerServerInterface superPeerServerInterface = (SuperPeerServerInterface) Naming.lookup(ConstantsUtil.SUPER_PEER_SERVER + "-" + superPeerId);
+                    LeafNodeServerInterface leafNodeServerInterface = (LeafNodeServerInterface) Naming.lookup(ConstantsUtil.PEER_SERVER + "-" + peerId);
+                    superPeerServerInterface.registry(leafNodeServerInterface.getPeer(), sharedFiles);
                 } catch (Exception ex) {
                     System.err.println("EXCEPTION: Client Exception while RE-REGISTERING files: " + ex.toString());
                     ex.printStackTrace();

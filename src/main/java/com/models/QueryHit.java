@@ -6,7 +6,7 @@ import java.util.List;
 
 public class QueryHit implements Serializable {
     private MessageID messageId;
-    private int timeToLive;
+    private int ttl;
     private String filename;
 
     // Slightly different than specfication
@@ -29,12 +29,12 @@ public class QueryHit implements Serializable {
         this.messageId = messageId;
     }
 
-    public int getTimeToLive() {
-        return timeToLive;
+    public int getTtl() {
+        return ttl;
     }
 
-    public void setTimeToLive(int timeToLive) {
-        this.timeToLive = timeToLive;
+    public void setTtl(int ttl) {
+        this.ttl = ttl;
     }
 
     public String getFilename() {

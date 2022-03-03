@@ -1,6 +1,6 @@
 package com.utility;
 
-import com.interfaces.PeerServerInterface;
+import com.interfaces.LeafNodeServerInterface;
 import com.logging.DirectoryWatcher;
 import com.models.Peer;
 import com.threads.DirectoryLogsThread;
@@ -22,11 +22,10 @@ public class FileUtil {
     public static void retrieveFile(
             final Integer peerId,
             final Integer serverPeerId,
-            final String filename,
-            final String clientDirectory) throws RemoteException {
+            final String filename) throws RemoteException {
 
         try {
-            final PeerServerInterface peerServerInterface = (PeerServerInterface) Naming.lookup(ConstantsUtil.PEER_SERVER + "-" + serverPeerId);
+            final LeafNodeServerInterface leafNodeServerInterface = (LeafNodeServerInterface) Naming.lookup(ConstantsUtil.PEER_SERVER + "-" + serverPeerId);
             System.out.println("Retrieving file " + filename + " from peer " + serverPeerId + "'. You'll be notified when it finishes.");
             Thread t_retrieve = new Thread(new Runnable() {
                 @Override
@@ -34,7 +33,7 @@ public class FileUtil {
                     try {
 
                         System.out.println("File retrieval started from peerId: " + serverPeerId + " | Time:" + System.currentTimeMillis());
-                        peerServerInterface.retrieve(peerId, clientDirectory, filename);
+                        leafNodeServerInterface.obtain(peerId, filename);
                         System.out.println("File retrieval done from peerId: " + serverPeerId + " | Time:" + System.currentTimeMillis());
                     } catch (Exception exception) {
                         exception.printStackTrace();
@@ -73,7 +72,9 @@ public class FileUtil {
         return filenames;
     }
 
-    public static void startDirectoryLogging(Integer peerId, Integer superPeerId) {
+    public static void startDirectoryLogging(Peer peer) {
+        Integer peerId = peer.getPeerId();
+        Integer superPeerId = peer.getSuperPeerId();
         String directory = ConstantsUtil.shared + "/" + peerId;
         List<String> sharedFiles = FileUtil.readSharedDirectory(true, directory);
         DirectoryWatcher directoryWatcher = new DirectoryWatcher(directory);

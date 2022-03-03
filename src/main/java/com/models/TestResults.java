@@ -1,40 +1,58 @@
 package com.models;
 
 public class TestResults {
-    private long retrieveStartTime;
-    private long retrieveEndTime;
-    private long searchStartTime;
-    private long searchEndTime;
+    private long obtainStartTime;
+    private long obtainEndTime;
+    private long forwardStartTime;
+    private long forwardEndTime;
+    private int numberOfObtainRequest;
+    private int numberOfForwardRequest;
 
-    public long getRetrieveStartTime() {
-        return retrieveStartTime;
+    public long getObtainStartTime() {
+        return obtainStartTime;
     }
 
-    public void setRetrieveStartTime(long retrieveStartTime) {
-        this.retrieveStartTime = retrieveStartTime;
+    public void setObtainStartTime(long obtainStartTime) {
+        this.obtainStartTime = obtainStartTime;
     }
 
-    public long getRetrieveEndTime() {
-        return retrieveEndTime;
+    public long getObtainEndTime() {
+        return obtainEndTime;
     }
 
-    public void setRetrieveEndTime(long retrieveEndTime) {
-        this.retrieveEndTime = retrieveEndTime;
+    public void setObtainEndTime(long obtainEndTime) {
+        this.obtainEndTime = obtainEndTime;
     }
 
-    public long getSearchStartTime() {
-        return searchStartTime;
+    public long getForwardStartTime() {
+        return forwardStartTime;
     }
 
-    public void setSearchStartTime(long searchStartTime) {
-        this.searchStartTime = searchStartTime;
+    public void setForwardStartTime(long forwardStartTime) {
+        this.forwardStartTime = forwardStartTime;
     }
 
-    public long getSearchEndTime() {
-        return searchEndTime;
+    public long getForwardEndTime() {
+        return forwardEndTime;
     }
 
-    public void setSearchEndTime(long searchEndTime) {
-        this.searchEndTime = searchEndTime;
+    public void setForwardEndTime(long forwardEndTime) {
+        this.forwardEndTime = forwardEndTime;
+    }
+
+    public int getNumberOfObtainRequest() {
+        return numberOfObtainRequest;
+    }
+
+    public void setNumberOfObtainRequest(int numberOfObtainRequest) {
+        this.numberOfObtainRequest = numberOfObtainRequest;
+    }
+
+    public int getNumberOfForwardRequest() {
+        return numberOfForwardRequest;
+    }
+
+    public void setNumberOfForwardRequest(int numberOfForwardRequest) {
+        this.numberOfForwardRequest = numberOfForwardRequest;
     }
 }

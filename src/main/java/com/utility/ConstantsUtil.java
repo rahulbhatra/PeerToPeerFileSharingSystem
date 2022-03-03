@@ -2,7 +2,7 @@ package com.utility;
 
 public class ConstantsUtil {
     public final static String PORT = "3000";
-    public final static String CENTRAL_INDEXING_SERVER = "rmi://localhost:" + PORT + "/centralIndexingServer";
+    public final static String SUPER_PEER_SERVER = "rmi://localhost:" + PORT + "/centralIndexingServer";
     public final static String PEER_SERVER = "rmi://localhost:" + PORT + "/peerServer";
     public final static String FILE_NOT_FOUND_ERROR = "Error: None of the peer server contains the file. | FileName:";
     public final static String WRONG_PEER_SELECTION_ERROR = "Error: Peer id selected does not exist. | PeerId:";
