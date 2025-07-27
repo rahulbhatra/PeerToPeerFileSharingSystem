@@ -66,7 +66,13 @@ public class GnutellaFileSharing {
                 System.out.println("1. for Yes");
                 cleanUpFiles = scanner.nextInt();
                 if (cleanUpFiles == 1) {
-                    FileUtils.cleanDirectory(new File(ConstantsUtil.shared));
+                    File sharedDir = new File(ConstantsUtil.shared);
+                    if (sharedDir.exists() && sharedDir.isDirectory()) {
+                        FileUtils.cleanDirectory(sharedDir);
+                        System.out.println("Directory cleaned: " + sharedDir.getAbsolutePath());
+                    } else {
+                        System.out.println("Directory does not exist: " + sharedDir.getAbsolutePath());
+                    }
                     FileUtil.createFiles(numberOfPeers);
                 }
             } while (cleanUpFiles < 0 && cleanUpFiles > 1);

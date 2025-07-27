@@ -55,6 +55,8 @@ public class FileUtil {
         System.out.println(ConstantsUtil.READING_SHARED_DIRECTORY + directory);
         File folder = new File(directory);
 
+        System.out.println("Current directory: " + System.getProperty("user.dir"));
+
         if (!folder.isDirectory() || !folder.exists()) {
             System.err.println(ConstantsUtil.WRONG_DIRECTORY + directory);
             System.exit(0);

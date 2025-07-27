@@ -61,8 +61,8 @@ public class SuperPeerServer extends UnicastRemoteObject implements SuperPeerSer
     private void connectNeighbours(List<Integer> neighbourSuperPeerIds) {
         for (Integer neighbourSuperPeerId : neighbourSuperPeerIds) {
             this.neighbourSuperPeerIds.add(neighbourSuperPeerId);
-            System.out.println("Successfully connected to neighbour Super Peer | Name: " + neighbourSuperPeerId);
         }
+        System.out.println("Successfully connected Supper Peer: " + superPeerNumber + " to neighbour Super Peer | Name: " + neighbourSuperPeerIds);
     }
 
     protected SuperPeerServer(int port) throws RemoteException {
